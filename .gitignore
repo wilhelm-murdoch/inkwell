@@ -1,0 +1,10 @@
+sandbox.py
+*.pyc
+.DS_Store
+.egg/*
+.egg-info
+.egg-info/
+.egg
+articles/
+static/
+templates/
