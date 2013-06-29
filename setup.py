@@ -16,6 +16,7 @@ setup(
           'Flask==0.10'
         , 'PyYaml==3.10'
         , 'Markdown==2.3.1'
+        , 'python-dateutil==2.1'
     ],
     setup_requires=[
           'nose==1.1.2'

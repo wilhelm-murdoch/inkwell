@@ -8,7 +8,7 @@ class Config(object):
     TEMPLATE_FOLDER = None
     STATIC_FOLDER = None
     STATIC_URL_PATH = None
-    ARTICLES_FOLDER = None
+    ARTICLES_FOLDER = 'articles'
 
 class LocalConfig(Config):
     pass
