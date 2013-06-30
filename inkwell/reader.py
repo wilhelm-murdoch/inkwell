@@ -30,12 +30,12 @@ class Reader(object):
     def list(self, by_year=None, by_month=None, by_day=None):
         articles = ArticleCollection()
         for filename in self._filter_articles(by_year, by_month, by_day):
-            article = self.article(filename=filename)
+            article = self.fetch_article(filename=filename)
             if article:
                 articles.append(article)
         return articles
 
-    def fetch_article(self, filename=None, **kwargs):
+    def fetch_article(self, filename=None, silent=False, **kwargs):
         if not filename:
             filename = "{}.{}".format('-'.join([
                   str(kwargs.get('year', ''))
@@ -45,12 +45,14 @@ class Reader(object):
             ]), ARTICLE_FILE_EXTENSION)
 
         path_to_file = os.path.join(self._articles_folder, filename)
+
         if os.path.isfile(path_to_file):
             try:
                 with open(path_to_file) as file:
                     return self._article_factory(file)
             except:
-                raise
+                if not silent:
+                    raise
         return False
 
     def _article_factory(self, file):
@@ -71,7 +73,7 @@ class Reader(object):
 
         return Article(filename=filename, meta=meta, body=body).compose()
 
-    def _build_filter_pattern(self, year, month, day):
+    def _build_filter_pattern(self, year=None, month=None, day=None):
         return ARTICLE_FILE_SEARCH_PATTERN % (
               year  or '\d{4}'
             , month or '\d{2}'
@@ -89,7 +91,6 @@ class Article(object):
         self.meta = kwargs.get('meta', {})
         self.body = kwargs.get('body', '')
         self.title = kwargs.get('title', '')
-        self.date = None
         self.is_composed = False
 
     @property
@@ -159,8 +160,9 @@ class Article(object):
             assert isinstance(meta, dict)
             self.meta = meta
 
-        for key, value in self.meta.iteritems():
-            setattr(self, key, value)
+        if self.meta:
+            for key, value in self.meta.iteritems():
+                setattr(self, key, value)
 
         self.is_composed = True
 

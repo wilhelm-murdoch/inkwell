@@ -40,7 +40,9 @@ def request_wants_json():
         request.accept_mimetypes['text/html']
 
 
-class Endpoint(MethodView):
+class ApiEndpoint(MethodView):
+    decorators = [json_presenter]
+
     @property
     def config(self):
         return current_app.config
@@ -56,6 +58,3 @@ class Endpoint(MethodView):
     @property
     def logger(self):
         return current_app.logger
-
-class ApiEndpoint(Endpoint):
-    decorators = [json_presenter]

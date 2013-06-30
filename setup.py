@@ -7,7 +7,7 @@ from version import __version__
 setup(
     name='inkwell',
     version=__version__,
-    description='A tiny git-powered blogging engine.',
+    description='A tiny Git-powered blogging API.',
     author='Wilhelm Murdoch',
     author_email='wilhelm.murdoch@gmail.com',
     url='http://www.devilmayco.de/',
