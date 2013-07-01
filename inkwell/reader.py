@@ -145,12 +145,11 @@ class Article(object):
             ))
         else:
             self._date = parser.parse(date)
-
         self._meta['date'] = self.date
 
     def compose(self, body=None, meta=None):
         if self.is_composed:
-            return True
+            return self
 
         if body and not self.body:
             assert isinstance(body, str)
@@ -163,6 +162,12 @@ class Article(object):
         if self.meta:
             for key, value in self.meta.iteritems():
                 setattr(self, key, value)
+
+        if not self.date:
+            self.date = None
+
+        if 'title' not in self.meta:
+            self._meta['title'] = self.title
 
         self.is_composed = True
 
@@ -209,6 +214,11 @@ class ArticleCollection(object):
 
     def rewind(self):
         self._current_index = 0
+
+    def compose(self):
+        for article in self:
+            article.compose()
+        return self
 
     def next(self):
         try:
