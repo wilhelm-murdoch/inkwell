@@ -11,7 +11,6 @@ class ExceptionsTest(unittest.TestCase):
             __import__('inkwell.exceptions', fromlist=\
                 exceptions.base_http_exceptions)
             for e in exceptions.base_http_exceptions:
-                import pdb; pdb.set_trace()
                 locals()[e]
             assert True
         except ImportError:
