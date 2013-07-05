@@ -5,9 +5,6 @@ class Config(object):
     HOST = '127.0.0.1'
     PORT = 9001
     TESTING = False
-    TEMPLATE_FOLDER = None
-    STATIC_FOLDER = None
-    STATIC_URL_PATH = None
     ARTICLES_FOLDER = 'articles'
 
 class LocalConfig(Config):
