@@ -13,9 +13,10 @@ class Config(object):
 class LocalConfig(Config):
     pass
 
-class TestingConfig(Config):
+class TestConfig(Config):
     TESTING = True
     ENVIRONMENT = 'testing'
+    ARTICLES_FOLDER = 'tests/articles/valid'
 
 class ProductionConfig(Config):
     DEBUG = False

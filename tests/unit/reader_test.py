@@ -13,7 +13,6 @@ class ReaderTest(unittest.TestCase):
             fixtures.valid_articles_folder)
 
     def test_invalid_article_path(self):
-        ''' Reader: Raises exception when invalid article path is provided '''
         try:
             inkwell.reader.Reader(articles_folder=\
                 fixtures.invalid_articles_path)
@@ -22,7 +21,6 @@ class ReaderTest(unittest.TestCase):
             assert True
 
     def test_valid_article_path(self):
-        ''' Reader: Does not raise an exception when valid article path is provided '''
         try:
             reader = inkwell.reader.Reader(articles_folder=\
                 fixtures.valid_articles_folder)
@@ -32,14 +30,12 @@ class ReaderTest(unittest.TestCase):
         self.assertEquals(reader.articles_folder, fixtures.valid_articles_folder)
 
     def test_list(self):
-        ''' Reader: Returns ArticleCollection containing any relevant articles '''
         articles = self.reader.list()
 
         self.assertTrue(isinstance(articles, inkwell.reader.ArticleCollection))
         self.assertEquals(len(articles), len(fixtures.valid_files))
 
     def test_list_by_year(self):
-        ''' Reader: Returns ArticleCollection with articles filtered by year '''
         articles = self.reader.list(by_year='1900')
         self.assertEquals(len(articles), 1)
 
@@ -53,12 +49,10 @@ class ReaderTest(unittest.TestCase):
         self.assertEquals(len(articles), 1)
 
     def test_list_by_year_and_month(self):
-        ''' Reader: Returns ArticleCollection with articles filtered by year and month '''
         articles = self.reader.list(by_year='1900', by_month='07')
         self.assertEquals(len(articles), 1)
 
     def test_list_by_year_month_and_day(self):
-        ''' Reader: Returns ArticleCollection with articles filtered by year, month and day '''
         articles = self.reader.list(by_year='2013', by_month='07', by_day='01')
         self.assertEquals(len(articles), 1)
 
@@ -66,13 +60,11 @@ class ReaderTest(unittest.TestCase):
         self.assertEquals(len(articles), 1)
 
     def test_fetch_valid_article(self):
-        ''' Reader: Returns Article instance for specified filename with relevant attributes '''
         article = self.reader.fetch_article(fixtures.valid_files[0])
 
         self.assertTrue(isinstance(article, inkwell.reader.Article))
 
     def test_fetch_valid_article_without_filename(self):
-        ''' Reader: Returns Article instance with relevant attributes without filename '''
         article = self.reader.fetch_article(year='1900', month='07', \
             day='03', title='lorem-ipsum-example-old')
 
@@ -81,14 +73,12 @@ class ReaderTest(unittest.TestCase):
         self.assertTrue(isinstance(article, inkwell.reader.Article))
 
     def test_fetch_invalid_article(self):
-        ''' Reader: Return False if invalid, or nonexistent, article is specified '''
         article = self.reader.fetch_article(year='2009', month='04', \
             day='01', title='ohoneos')
 
         self.assertFalse(article)
 
     def test_article_factory(self):
-        ''' Reader: Returns Article instance for specified file pointer '''
         test_file = fixtures.valid_files[0]
         with open(os.path.join(fixtures.valid_articles_folder, test_file))\
             as file:
@@ -99,7 +89,6 @@ class ReaderTest(unittest.TestCase):
             self.assertTrue(isinstance(article, inkwell.reader.Article))
 
     def test_build_filter_pattern(self):
-        ''' Reader: Generates regex pattern for specified year, month and or day '''
         filter = self.reader._build_filter_pattern()
         self.assertEquals(filter, r'^\d{4}\-\d{2}\-\d{2}\-.*\.txt$')
 
@@ -114,7 +103,6 @@ class ReaderTest(unittest.TestCase):
         self.assertEquals(filter, r'^1900\-01\-01\-.*\.txt$')
 
     def test_filter_articles(self):
-        ''' Reader: Returns filtered list of articles by year, month and or day '''
         articles = self.reader._filter_articles()
         self.assertEquals(len(fixtures.valid_files), len(articles))
 
@@ -128,7 +116,6 @@ class ReaderTest(unittest.TestCase):
         self.assertEquals(len(articles), 3)
 
     def test_article_file_pattern(self):
-        ''' Reader: Attempt to parse given list of filenames using ARTICLE_FILE_PATTERN '''
         valid = invalid = 0
         for filename in (fixtures.valid_files + \
             fixtures.invalid_files):

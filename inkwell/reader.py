@@ -230,9 +230,9 @@ class ArticleCollection(object):
 
     def sort(self, by, reverse=False):
         if isinstance(by, type(lambda: None)) and by.__name__ == '<lambda>':
-            self.items.sort(key = by, reverse=reverse)
+            self.items.sort(key=by, reverse=reverse)
         else:
-            self.items.sort(key = lambda x: getattr(x, by), reverse=reverse)
+            self.items.sort(key=lambda x: getattr(x, by), reverse=reverse)
         return self.items
 
     def __getitem__(self, i):

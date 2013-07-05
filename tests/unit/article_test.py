@@ -7,7 +7,6 @@ from tests import fixtures
 
 class ArticleTest(unittest.TestCase):
     def test_without_meta(self):
-        ''' Article: Init Article without meta '''
         filename = fixtures.valid_files[0]
         article = Article(filename=filename, body='Lorem Ipsum')
 
@@ -32,7 +31,6 @@ class ArticleTest(unittest.TestCase):
             matched.group('title')))
 
     def test_compose_without_body_and_meta(self):
-        ''' Article: Compose Article without body and meta '''
         filename = fixtures.valid_files[0]
         article = Article(filename=filename)
 
@@ -57,7 +55,6 @@ class ArticleTest(unittest.TestCase):
             matched.group('title')))
 
     def test_compose_without_body_but_with_meta(self):
-        ''' Article: Compose Article without body but with meta '''
         filename = fixtures.valid_files[0]
         meta = {
               'title': 'This is a test title'
@@ -78,7 +75,6 @@ class ArticleTest(unittest.TestCase):
         self.assertEquals(article.title, meta['title'])
 
     def test_to_json(self):
-        ''' Article: JSON output is structured properly '''
         filename = fixtures.valid_files[0]
         article = Article(filename=filename)
 
@@ -98,7 +94,6 @@ class ArticleTest(unittest.TestCase):
         })
 
     def test_unslugify(self):
-        ''' Article: Filename titles should resolve to unslugified version '''
         for filename in fixtures.valid_files:
             article = Article(filename=filename).compose()
             matched = re.search(ARTICLE_FILE_PATTERN, filename)
@@ -106,7 +101,6 @@ class ArticleTest(unittest.TestCase):
                 matched.group('title')))
 
     def test_getattr(self):
-        ''' Article: Unknown properties should return None '''
         filename = fixtures.valid_files[0]
         article = Article(filename=filename).compose()
 

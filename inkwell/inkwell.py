@@ -22,7 +22,7 @@ for rule in rules:
 @api.before_request
 def before_request(*args, **kwargs):
     if not request_wants_json():
-        raise BadRequest, '`Accept: application/json` is required.'
+        raise BadRequest
 
 @api.errorhandler(404)
 @api.errorhandler(Exception)
