@@ -38,21 +38,49 @@ class Reader(object):
         for article in result:
             print article.title
     """
+
     def __init__(self, **kwargs):
+        """ Creates class instance and assigns properties.
+
+        Arguments::
+            kwargs['articles_folder'] str absolute path to the articles folder.
+        """
         self.articles_folder = kwargs.get('articles_folder', None)
 
     @property
     def articles_folder(self):
+        """ Provides access to `Reader._articles_folder`
+
+        Returns::
+            str absolute path to the articles folder.
+        """
         return self._articles_folder
 
     @articles_folder.setter
     def articles_folder(self, path):
+        """ Sets and validates the specified path to the articles folder. If
+        the specified path is not valid, this method will raise IOError.
+        """
         path = os.path.join(os.getcwd(), path)
         if not os.path.exists(path):
             raise IOError, "article path {} is invalid".format(path)
         self._articles_folder = path
 
     def list(self, by_year=None, by_month=None, by_day=None):
+        """ Responsible for searching the specified articles folder for files
+        that match ARTICLE_FILE_SEARCH_PATTERN. Returns an instance of
+        `inkwell.reader.ArticleCollection` if any articles are found.
+
+        Optional arguments can be used to filter articles by date.
+
+        Arguments::
+            by_year  str Four-digit number representing the article year
+            by_month str Two-digit number representing the article month
+            by_day   str Two-digit number representing the article day
+
+        Returns::
+            instance of `inkwell.reader.ArticleCollection`
+        """
         articles = ArticleCollection()
         for filename in self._filter_articles(by_year, by_month, by_day):
             article = self.fetch_article(filename=filename)
@@ -61,12 +89,38 @@ class Reader(object):
         return articles
 
     def fetch_article(self, filename=None, **kwargs):
+        """ Attempts to locate and open the specified file. If a filename is
+        not specified, a filename can be constructed using optional arguments.
+
+        Arguments::
+            filename str Filename matching ARTICLE_FILE_SEARCH_PATTERN
+            year     str Four-digit number representing the article year
+            month    str Two-digit number representing the article month
+            day      str Two-digit number representing the article day
+            title    str Slugified title of article
+
+        Return::
+            instance of `inkwell.reader.Article`
+
+        Note::
+            If filename is not specified, all other optional arguments must be
+            specified or there will be nothing to fetch. If this is the case,
+            this method will raise ValueError.
+        """
         if not filename:
+            year  = kwargs.get('year', None)
+            month = kwargs.get('month', None)
+            day   = kwargs.get('day', None)
+            title = kwargs.get('title', None)
+
+            if not year and not month and not day and not title:
+                raise ValueError, 'Year, month, day and title not specified.'
+
             filename = "{}.{}".format('-'.join([
-                  str(kwargs.get('year', ''))
-                , str(kwargs.get('month', ''))
-                , str(kwargs.get('day', ''))
-                , str(kwargs.get('title', ''))
+                  str(year)
+                , str(month)
+                , str(day)
+                , str(title)
             ]), ARTICLE_FILE_EXTENSION)
 
         path_to_file = os.path.join(self._articles_folder, filename)
@@ -74,30 +128,59 @@ class Reader(object):
         if os.path.isfile(path_to_file):
             try:
                 with open(path_to_file) as file:
-                    return self._article_factory(file)
+                    article = self._article_factory(file.read(), filename)
+                    file.close()
+                return article
             except:
                 raise
         return False
 
-    def _article_factory(self, file):
-        file_contents = file.read()
-        filename = os.path.basename(file.name)
-        file.close()
+    def _article_factory(self, content, filename):
+        """ Attempts to parse the given file stream for article header and body
+        blocks. If all goes well, this method will return a single instance of
+        `inkwell.reader.Article` with all associated metadata.
 
+        Arguments::
+            content  str The content of the current file.
+            filename str The name of the current file.
+
+        Return::
+            instance of `inkwell.reader.Article`
+
+        Note::
+            The body of the file must meet certain requirements in order to be
+            properly parsed. The header block is contained before the first two
+            consecutive newline `\n` entries. The header must be formatted in
+            YAML. Everything after the first `\n\n` is considered the body and
+            will be parsed as Markdown.
+
+            Will raise ValueError if the file or header block are invalid.
+        """
         try:
-            header, body = file_contents.split('\n\n', 1)
+            header, body = content.split('\n\n', 1)
         except:
-            raise InvalidArticle, "{} may be malformed.".format(filename)
+            raise ValueError, "{} may be malformed.".format(filename)
 
         try:
             meta = yaml.load(header)
         except:
-            raise InvalidArticleHeader, "{} has an invalid header.".format(\
-                filename)
+            raise ValueError, "{} has an invalid header.".format(filename)
 
         return Article(filename=filename, meta=meta, body=body).compose()
 
     def _build_filter_pattern(self, year=None, month=None, day=None):
+        """This method will attempt to dynamically construct the REGEX used to
+        filter files by date elements.
+
+        Arguments::
+            year  str Four-digit number representing the article year
+            month str Two-digit number representing the article month
+            day   str Two-digit number representing the article day
+
+        Returns::
+            A string containing the appropriate regular expression to filter
+            all files in the given directory, or to filter them by date.
+        """
         return ARTICLE_FILE_SEARCH_PATTERN % (
               year  or '\d{4}'
             , month or '\d{2}'
@@ -105,6 +188,17 @@ class Reader(object):
         )
 
     def _filter_articles(self, year=None, month=None, day=None):
+        """Applies the configured filter pattern to the specified articles
+        folder and returns a list containing the resulting filenames.
+
+        Arguments::
+            year  str Four-digit number representing the article year
+            month str Two-digit number representing the article month
+            day   str Two-digit number representing the article day
+
+        Returns::
+            A list containing any matched filenames.
+        """
         return [file for file in os.listdir(self.articles_folder) if \
             re.match(self._build_filter_pattern(year, month, day), file)]
 
@@ -288,6 +382,3 @@ class ArticleCollection(object):
 
     def to_json(self):
         return self.items
-
-class InvalidArticle(Exception): pass
-class InvalidArticleHeader(Exception): pass

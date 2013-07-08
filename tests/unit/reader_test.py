@@ -81,7 +81,8 @@ class ReaderTest(unittest.TestCase):
         test_file = fixtures.valid_files[0]
         with open(os.path.join(fixtures.valid_articles_folder, test_file))\
             as file:
-            article = self.reader._article_factory(file)
+            article = self.reader._article_factory(file.read(), test_file)
+            file.close()
 
             self.assertEquals(test_file, article.filename)
             self.assertTrue(isinstance(article.date, datetime))
