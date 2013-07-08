@@ -3,6 +3,7 @@ from werkzeug.debug import tbtools
 from flask import Blueprint, Flask, render_template, current_app
 from api import archive, article
 from utils import request_wants_json
+from reader import Reader
 from exceptions import BadRequest, NotFound, InternalServerError
 
 rules = [
@@ -21,12 +22,30 @@ for rule in rules:
 
 @api.before_request
 def before_request(*args, **kwargs):
+    """ Decorator applied to all incoming requests determines whether the
+    request contains a valid `Accept` header with the value of
+    `application/json`. Raises `BadRequest` if evaluated to False.
+
+    Returns::
+        inkwell.exceptions.BadRequest
+    """
     if not request_wants_json():
         raise BadRequest
 
 @api.errorhandler(404)
 @api.errorhandler(Exception)
 def errorhandler(error):
+    """ An Inkwell-specific error handler that handles 404 and 500 server
+    errors. All Inkwell internal exceptions are derived from
+    `inkwell.exceptions.JSONHTTPException`, which returns a JSON body that
+    Flask can recognize and use as a response.
+
+    Arguments::
+        error `object` Exception derived from JSONHTTPException.
+
+    Returns::
+        Flask response
+    """
     if not hasattr(error, 'code'):
         traceback = tbtools.get_current_traceback()
         current_app.logger.error(traceback.plaintext)
@@ -41,9 +60,21 @@ def errorhandler(error):
         return e, e.code
 
 def bootstrap(configuration=None):
+    """ A factory that creates an instance of the Inkwell server. This allows
+    one create multiple instances running different configurations
+    simultaneously.
+
+    Arguments::
+        configuration `object or None` A configuration object for the resulting
+        instance of Inkwell.
+
+    Returns::
+        An instance of an Inkwell server.
+    """
     app = Flask(__name__)
 
     app.config.from_object(configuration or 'inkwell.config.LocalConfig')
     app.register_blueprint(api)
+    app.reader = Reader(articles_folder=app.config.get('ARTICLES_FOLDER'))
 
     return app

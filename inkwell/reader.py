@@ -2,7 +2,6 @@
 import os
 import re
 import yaml
-import time
 from dateutil import parser
 from datetime import datetime
 import markdown
@@ -12,9 +11,35 @@ ARTICLE_FILE_SEARCH_PATTERN = r'^%s\-%s\-%s\-.*\.txt$'
 ARTICLE_FILE_EXTENSION = 'txt'
 
 class Reader(object):
+    """ Class `inkwell.reader.Reader` is responsible for finding articles within
+    the specified `articles_folder`. If any are found, it will produce an
+    instance of `inkwell.reader.ArticleCollection`, which contains a list of
+    parsed articles in the form of `inkwell.reader.Article`.
+
+    Usage::
+
+        reader = Reader(articles_folder='/path/to/articles')
+
+        try:
+            # Fetch all relevant articles ...
+            result = reader.list()
+
+            # Or, fetch them by year ...
+            result = reader.list(by_year='2013')
+
+            # Or, fetch them by year and month ...
+            result = reader.list(by_year='2013', by_month='12')
+
+            # Or, fetch them by year, month and day ...
+            result = reader.list(by_year='2013', by_month='12', by_day='01')
+        except Exception as e:
+            print "Doh! {}".format(e.message)
+
+        for article in result:
+            print article.title
+    """
     def __init__(self, **kwargs):
         self.articles_folder = kwargs.get('articles_folder', None)
-        self._cache = []
 
     @property
     def articles_folder(self):
@@ -35,7 +60,7 @@ class Reader(object):
                 articles.append(article)
         return articles
 
-    def fetch_article(self, filename=None, silent=False, **kwargs):
+    def fetch_article(self, filename=None, **kwargs):
         if not filename:
             filename = "{}.{}".format('-'.join([
                   str(kwargs.get('year', ''))
@@ -51,8 +76,7 @@ class Reader(object):
                 with open(path_to_file) as file:
                     return self._article_factory(file)
             except:
-                if not silent:
-                    raise
+                raise
         return False
 
     def _article_factory(self, file):

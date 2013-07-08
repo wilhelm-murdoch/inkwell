@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from inkwell.reader import ArticleCollection, Article
 import unittest
 from tests import fixtures

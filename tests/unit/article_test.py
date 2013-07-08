@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from inkwell.reader import Article, Reader, ARTICLE_FILE_PATTERN
 from dateutil import parser
 from datetime import datetime

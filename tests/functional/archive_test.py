@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import inkwell
 import unittest
 import json
@@ -6,15 +7,12 @@ from tests import fixtures
 from werkzeug.test import Client
 
 class ArchiveTest(unittest.TestCase):
-    def setUp(self):
-        self.client = inkwell.bootstrap('inkwell.config.TestConfig').test_client()
-
     def test_bad_accept_header(self):
-        response = self.client.get('/inkwell/')
+        response = fixtures.client.get('/inkwell/')
         self.assertEquals(response.status_code, 400)
 
     def test_archive_root(self):
-        response = self.client.get('/inkwell/', headers=\
+        response = fixtures.client.get('/inkwell/', headers=\
             {'Accept': 'application/json'})
         self.assertEquals(response.status_code, 200)
         body = json.loads(response.data)
@@ -23,7 +21,7 @@ class ArchiveTest(unittest.TestCase):
     def test_archive_year(self):
         year = random.choice(fixtures.dates.keys())
 
-        response = self.client.get("/inkwell/{}".format(year), headers=\
+        response = fixtures.client.get("/inkwell/{}".format(year), headers=\
             {'Accept': 'application/json'})
 
         self.assertEquals(response.status_code, 200)
@@ -39,7 +37,7 @@ class ArchiveTest(unittest.TestCase):
         year  = random.choice(fixtures.dates.keys())
         month = random.choice(fixtures.dates[year].keys())
 
-        response = self.client.get("/inkwell/{}/{}".format(year, month), \
+        response = fixtures.client.get("/inkwell/{}/{}".format(year, month), \
             headers={'Accept': 'application/json'})
 
         self.assertEquals(response.status_code, 200)
@@ -52,8 +50,8 @@ class ArchiveTest(unittest.TestCase):
         month = random.choice(fixtures.dates[year].keys())
         day   = random.choice(fixtures.dates[year][month])
 
-        response = self.client.get("/inkwell/{}/{}/{}".format(year, month, \
-            day), headers={'Accept': 'application/json'})
+        response = fixtures.client.get("/inkwell/{}/{}/{}".format(year, \
+            month, day), headers={'Accept': 'application/json'})
 
         self.assertEquals(response.status_code, 200)
         body = json.loads(response.data)
