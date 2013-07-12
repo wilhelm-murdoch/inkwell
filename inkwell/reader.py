@@ -4,7 +4,6 @@ import re
 import yaml
 from dateutil import parser
 from datetime import datetime
-import markdown
 
 ARTICLE_FILE_PATTERN = r'^(?P<year>\d{4})\-(?P<month>\d{2})\-(?P<day>\d{2})\-(?P<title>.*)\.txt$'
 ARTICLE_FILE_SEARCH_PATTERN = r'^%s\-%s\-%s\-.*\.txt$'
@@ -151,8 +150,7 @@ class Reader(object):
             The body of the file must meet certain requirements in order to be
             properly parsed. The header block is contained before the first two
             consecutive newline `\n` entries. The header must be formatted in
-            YAML. Everything after the first `\n\n` is considered the body and
-            will be parsed as Markdown.
+            YAML. Everything after the first `\n\n` is considered the body.
 
             Will raise ValueError if the file or header block are invalid.
         """
@@ -163,6 +161,10 @@ class Reader(object):
 
         try:
             meta = yaml.load(header)
+
+            if isinstance(meta, str):
+                body = meta
+                meta = {}
         except:
             raise ValueError, "{} has an invalid header.".format(filename)
 
@@ -204,6 +206,8 @@ class Reader(object):
 
 
 class Article(object):
+    IGNORED_META_TAGS = ['date']
+
     def __init__(self, filename, **kwargs):
         self.filename = filename
         self.meta = kwargs.get('meta', {})
@@ -233,7 +237,7 @@ class Article(object):
 
     @body.setter
     def body(self, body):
-        self._body = markdown.markdown(body)
+        self._body = body
 
     @property
     def title(self):
@@ -241,10 +245,11 @@ class Article(object):
 
     @title.setter
     def title(self, title=None):
-        if not title:
+        if title:
+            self._title = title
+        else:
             matched = re.search(ARTICLE_FILE_PATTERN, self.filename)
-            title = self._unslugify(matched.group('title'))
-        self._title = title
+            self._title = self._unslugify(matched.group('title'))
 
     @property
     def date(self):
@@ -252,40 +257,27 @@ class Article(object):
 
     @date.setter
     def date(self, date):
-        if isinstance(date, datetime):
-            return
-        if not date:
-            matched = re.search(ARTICLE_FILE_PATTERN, self.filename)
-            self._date = parser.parse("{}/{}/{}".format(
-                  matched.group('year')
-                , matched.group('month')
-                , matched.group('day')
-            ))
-        else:
-            self._date = parser.parse(date)
-        self._meta['date'] = self.date
+        assert isinstance(date, datetime)
+        self._date = date
 
-    def compose(self, body=None, meta=None):
+    def compose(self):
         if self.is_composed:
             return self
 
-        if body and not self.body:
-            assert isinstance(body, str)
-            self.body = body
-
-        if meta and not self.meta:
-            assert isinstance(meta, dict)
-            self.meta = meta
+        matched = re.search(ARTICLE_FILE_PATTERN, self.filename)
+        self.date = parser.parse("{}/{}/{}".format(
+              matched.group('year')
+            , matched.group('month')
+            , matched.group('day')
+        ))
 
         if self.meta:
             for key, value in self.meta.iteritems():
-                setattr(self, key, value)
+                if key.lower() not in self.IGNORED_META_TAGS:
+                    setattr(self, key, value)
 
-        if not self.date:
-            self.date = None
-
-        if 'title' not in self.meta:
-            self._meta['title'] = self.title
+        self.meta['title'] = self.title
+        self.meta['date']  = self.date
 
         self.is_composed = True
 

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from werkzeug.debug import tbtools
 from flask import Blueprint, Flask, render_template, current_app
 from api import archive, article
 from utils import request_wants_json
@@ -47,8 +46,6 @@ def errorhandler(error):
         Flask response
     """
     if not hasattr(error, 'code'):
-        traceback = tbtools.get_current_traceback()
-        current_app.logger.error(traceback.plaintext)
         error.code = 500
 
     try:

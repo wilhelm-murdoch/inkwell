@@ -12,13 +12,11 @@ class ArticleTest(unittest.TestCase):
         article = Article(filename=filename, body='Lorem Ipsum')
 
         self.assertEquals(filename, article.filename)
-        self.assertEquals(article.body, '<p>Lorem Ipsum</p>')
+        self.assertEquals(article.body, 'Lorem Ipsum')
         self.assertFalse(article.is_composed)
         composed = article.compose()
         self.assertTrue(isinstance(composed, Article))
         self.assertTrue(article.is_composed)
-
-        article.date = None
 
         matched = re.search(ARTICLE_FILE_PATTERN, filename)
         date = parser.parse("{}/{}/{}".format(
@@ -42,8 +40,6 @@ class ArticleTest(unittest.TestCase):
         self.assertTrue(isinstance(composed, Article))
         self.assertTrue(article.is_composed)
 
-        article.date = None
-
         matched = re.search(ARTICLE_FILE_PATTERN, filename)
         date = parser.parse("{}/{}/{}".format(
               matched.group('year')
@@ -59,7 +55,6 @@ class ArticleTest(unittest.TestCase):
         filename = fixtures.valid_files[0]
         meta = {
               'title': 'This is a test title'
-            , 'date': '2013/07/02 10:00:00'
             , 'arbitrary': 'blerp'
         }
         article = Article(filename=filename, meta=meta)

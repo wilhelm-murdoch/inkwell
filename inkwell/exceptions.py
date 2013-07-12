@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from werkzeug import exceptions
-from flask import json
+from werkzeug.debug import tbtools
+from flask import json, current_app
 import inspect
 
 class JSONHTTPException(exceptions.HTTPException):
@@ -8,6 +9,10 @@ class JSONHTTPException(exceptions.HTTPException):
     as a Flask request.
     """
     def get_body(self, environ):
+        if self.code == 500:
+            traceback = tbtools.get_current_traceback()
+            current_app.logger.error(traceback.plaintext)
+
         return json.dumps({
             'code': self.code,
             'name': self.name,
