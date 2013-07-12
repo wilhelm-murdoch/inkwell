@@ -7,16 +7,20 @@ import unittest
 from tests import fixtures
 
 class ArticleTest(unittest.TestCase):
+    def test_raise_on_invalid_filename(self):
+        try:
+            Article(filename='invalidfilename.txt')
+            assert False
+        except ValueError:
+            assert True
+
     def test_without_meta(self):
         filename = fixtures.valid_files[0]
         article = Article(filename=filename, body='Lorem Ipsum')
 
         self.assertEquals(filename, article.filename)
         self.assertEquals(article.body, 'Lorem Ipsum')
-        self.assertFalse(article.is_composed)
-        composed = article.compose()
-        self.assertTrue(isinstance(composed, Article))
-        self.assertTrue(article.is_composed)
+        self.assertTrue(isinstance(article, Article))
 
         matched = re.search(ARTICLE_FILE_PATTERN, filename)
         date = parser.parse("{}/{}/{}".format(
@@ -29,16 +33,13 @@ class ArticleTest(unittest.TestCase):
         self.assertEquals(article.title, article._unslugify(\
             matched.group('title')))
 
-    def test_compose_without_body_and_meta(self):
+    def test_without_body_and_meta(self):
         filename = fixtures.valid_files[0]
         article = Article(filename=filename)
 
         self.assertEquals(filename, article.filename)
         self.assertEquals(article.body, '')
-        self.assertFalse(article.is_composed)
-        composed = article.compose()
-        self.assertTrue(isinstance(composed, Article))
-        self.assertTrue(article.is_composed)
+        self.assertTrue(isinstance(article, Article))
 
         matched = re.search(ARTICLE_FILE_PATTERN, filename)
         date = parser.parse("{}/{}/{}".format(
@@ -51,7 +52,7 @@ class ArticleTest(unittest.TestCase):
         self.assertEquals(article.title, article._unslugify(\
             matched.group('title')))
 
-    def test_compose_without_body_but_with_meta(self):
+    def test_without_body_but_with_meta(self):
         filename = fixtures.valid_files[0]
         meta = {
               'title': 'This is a test title'
@@ -61,10 +62,7 @@ class ArticleTest(unittest.TestCase):
 
         self.assertEquals(filename, article.filename)
         self.assertEquals(article.body, '')
-        self.assertFalse(article.is_composed)
-        composed = article.compose()
-        self.assertTrue(isinstance(composed, Article))
-        self.assertTrue(article.is_composed)
+        self.assertTrue(isinstance(article, Article))
 
         self.assertEquals(article.date, meta['date'])
         self.assertEquals(article.arbitrary, meta['arbitrary'])
@@ -91,14 +89,14 @@ class ArticleTest(unittest.TestCase):
 
     def test_unslugify(self):
         for filename in fixtures.valid_files:
-            article = Article(filename=filename).compose()
+            article = Article(filename=filename)
             matched = re.search(ARTICLE_FILE_PATTERN, filename)
             self.assertEquals(article.title, article._unslugify(\
                 matched.group('title')))
 
     def test_getattr(self):
         filename = fixtures.valid_files[0]
-        article = Article(filename=filename).compose()
+        article = Article(filename=filename)
 
         self.assertIsNone(article.does_not_exist_here)
         self.assertIsNone(article.does_not_exist_there)

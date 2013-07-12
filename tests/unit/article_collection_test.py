@@ -56,7 +56,7 @@ class ArticleCollectionTest(unittest.TestCase):
         self.assertEquals(self.articles[0], collection.current())
 
     def test_sort(self):
-        collection = ArticleCollection(items=self.articles).compose()
+        collection = ArticleCollection(items=self.articles)
 
         first = collection.first()
         last  = collection.last()
@@ -72,7 +72,7 @@ class ArticleCollectionTest(unittest.TestCase):
             , Article(filename='2013-07-02-b-title.txt')
         ]
 
-        collection = ArticleCollection(items=articles).compose()
+        collection = ArticleCollection(items=articles)
 
         first = collection.first()
         last  = collection.last()
@@ -108,7 +108,7 @@ class ArticleCollectionTest(unittest.TestCase):
 
     def test_append(self):
         collection = ArticleCollection(items=self.articles)
-        article = Article(filename='2013-07-02-a-title.txt').compose()
+        article = Article(filename='2013-07-02-a-title.txt')
         collection.append(article)
 
         self.assertEquals(article.title, collection.last().title)

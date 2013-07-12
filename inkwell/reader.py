@@ -168,7 +168,7 @@ class Reader(object):
         except:
             raise ValueError, "{} has an invalid header.".format(filename)
 
-        return Article(filename=filename, meta=meta, body=body).compose()
+        return Article(filename=filename, meta=meta, body=body)
 
     def _build_filter_pattern(self, year=None, month=None, day=None):
         """This method will attempt to dynamically construct the REGEX used to
@@ -206,69 +206,82 @@ class Reader(object):
 
 
 class Article(object):
+    """ Class `inkwell.reader.Article` is an abstract representation of a
+    single article entry. This class is not responsible for parsing file and
+    creating attributes, that's the job of `inkwell.reader.Reader`. You
+    must, at the very least, specify a filename. If no other attributes are
+    specified, upon composition, this class will attempt to derive a date and
+    title from the specified filename itself. Title, date and body properties
+    are completely optional, but the specified filename must match the
+    `inkwell.reader.ARTICLE_FILE_PATTERN` pattern or a ValueError will be
+    raised.
+
+    Usage::
+
+        article = Article(filename='2013-07-12-example.txt')
+
+        print article.title
+        >>> 'Example'
+
+        print article.date
+        >>> datetime.datetime(2013, 7, 12, 0, 0)
+
+        print article.body
+        >>> ''
+
+        try:
+            Article(filename='aninvalidfilename.txt')
+        except ValueError as e:
+            print e.message
+
+        article = Article(
+              filename='2013-07-12-example.txt'
+            , title='Another Example'
+            , meta={'tags': ['foo', 'bar'], 'time': '12:34:00'}
+            , body='This is a body'
+        )
+
+        print article.title
+        >>> 'Another Example'
+
+        print article.date
+        >>> datetime.datetime(2013, 7, 12, 0, 0)
+
+        print article.body
+        >>> 'This is a body'
+
+        print article.tags
+        >>> ['foo', 'bar']
+    """
+
+    """ This is a list containing reserved metadata keywords. """
     IGNORED_META_TAGS = ['date']
 
     def __init__(self, filename, **kwargs):
+        """ Creates class instance and assigns properties.
+
+        Arguments::
+            filename str the name of article's file.
+            kwargs['title'] str official article title
+            kwargs['body'] str the main body of the article
+            kwargs['meta'] dict containing additional metadata properties
+
+        Raises::
+            ValueError for invalid filename values
+        """
+        self.matched = re.search(ARTICLE_FILE_PATTERN, filename)
+        if not self.matched:
+            raise ValueError, 'filename must match ARTICLE_FILE_PATTERN.'
+
         self.filename = filename
         self.meta = kwargs.get('meta', {})
         self.body = kwargs.get('body', '')
         self.title = kwargs.get('title', '')
-        self.is_composed = False
 
-    @property
-    def filename(self):
-        return self._filename
-
-    @filename.setter
-    def filename(self, filename):
-        self._filename = filename
-
-    @property
-    def meta(self):
-        return self._meta
-
-    @meta.setter
-    def meta(self, meta):
-        self._meta = meta
-
-    @property
-    def body(self):
-        return self._body
-
-    @body.setter
-    def body(self, body):
-        self._body = body
-
-    @property
-    def title(self):
-        return self._title
-
-    @title.setter
-    def title(self, title=None):
-        if title:
-            self._title = title
-        else:
-            matched = re.search(ARTICLE_FILE_PATTERN, self.filename)
-            self._title = self._unslugify(matched.group('title'))
-
-    @property
-    def date(self):
-        return self._date
-
-    @date.setter
-    def date(self, date):
-        assert isinstance(date, datetime)
-        self._date = date
-
-    def compose(self):
-        if self.is_composed:
-            return self
-
-        matched = re.search(ARTICLE_FILE_PATTERN, self.filename)
         self.date = parser.parse("{}/{}/{}".format(
-              matched.group('year')
-            , matched.group('month')
-            , matched.group('day')
+              self.matched.group('year')
+            , self.matched.group('month')
+            , self.matched.group('day')
         ))
 
         if self.meta:
@@ -279,23 +292,82 @@ class Article(object):
         self.meta['title'] = self.title
         self.meta['date']  = self.date
 
-        self.is_composed = True
+    @property
+    def title(self):
+        return self._title
 
-        return self
+    @title.setter
+    def title(self, title=None):
+        if title:
+            self._title = title
+        else:
+            self._title = self._unslugify(self.matched.group('title'))
+
+    @property
+    def date(self):
+        return self._date
+
+    @date.setter
+    def date(self, date):
+        assert isinstance(date, datetime)
+        self._date = date
 
     def to_json(self):
-        if not self.is_composed:
-            self.compose()
+        """ Returns a JSON representation of the current article.
 
+        Usage::
+
+            article = Article(
+                  filename='2013-07-12-example.txt'
+                , title='Another Example'
+                , meta={'tags': ['foo', 'bar'], 'time': '12:34:00'}
+                , body='This is a body'
+            )
+
+            print article.to_json()
+            >>> {
+                'meta': {
+                      'title': 'Another Example'
+                    , 'tags': ['foo', 'bar']
+                    , 'date': '2013-07-12T00:00:00Z'
+                    , 'time': '12:34:00'
+                }
+                , 'body': 'This is a body'
+            }
+
+        Returns::
+            dictionary containing the JSON output for the article.
+        """
         return {
               'meta': self.meta
             , 'body': self.body
         }
 
     def _unslugify(self, string):
+        """Takes the provided string and converts it into a human-readable
+        article title. This is primarily used as a fallback when no official
+        title is provided, where the filename itself is used instead.
+
+        Usage::
+
+            print article._unslugify('this-is-a-title')
+            >>> 'This Is A Title'
+
+        Arguments::
+            string str the string to unslugify
+
+        Returns::
+            an unslugified string
+        """
         return string.replace('-', ' ').replace('_', ' ').title()
 
     def __getattr__(self, attr):
+        """ Prevents raising of KeyError when accessing a non-existent
+        attribute.
+
+        Returns::
+            None
+        """
         return None
 
 class ArticleCollection(object):
@@ -310,7 +382,7 @@ class ArticleCollection(object):
     @items.setter
     def items(self, items):
         assert isinstance(items, list)
-        assert self.is_valid(items), "items must be a list of class Article instances."
+        assert self.is_valid(items), 'items must be a list of class Article instances.'
         self._items = items
 
     def first(self):
@@ -324,11 +396,6 @@ class ArticleCollection(object):
 
     def rewind(self):
         self._current_index = 0
-
-    def compose(self):
-        for article in self:
-            article.compose()
-        return self
 
     def next(self):
         try:
@@ -357,11 +424,11 @@ class ArticleCollection(object):
 
     def extend(self, items):
         assert isinstance(items, list)
-        assert self.is_valid(items), "items must be a list of class Article instances."
+        assert self.is_valid(items), 'items must be a list of class Article instances.'
         self.items.extend(items)
 
     def append(self, item):
-        assert isinstance(item, Article), "item must be an instance of class Article."
+        assert isinstance(item, Article), 'item must be an instance of class Article.'
         self.items.append(item)
 
     def is_valid(self, items):
