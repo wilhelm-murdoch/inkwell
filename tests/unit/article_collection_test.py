@@ -10,45 +10,45 @@ class ArticleCollectionTest(unittest.TestCase):
             self.articles.append(Article(filename=filename))
 
     def test_init_with_articles(self):
-        collection = ArticleCollection(items=self.articles)
+        collection = ArticleCollection(articles=self.articles)
 
-        self.assertEquals(len(collection.items), len(self.articles))
+        self.assertEquals(len(collection.articles), len(self.articles))
 
     def test_init_without_articles(self):
         collection = ArticleCollection()
-        collection.items = self.articles
+        collection.articles = self.articles
 
-        self.assertEquals(len(collection.items), len(self.articles))
+        self.assertEquals(len(collection.articles), len(self.articles))
 
     def test_init_with_invalid_articles(self):
         try:
-            collection = ArticleCollection(items=[1, 2, 3, 4])
+            collection = ArticleCollection(articles=[1, 2, 3, 4])
             assert False
         except AssertionError as e:
             assert True
 
         try:
-            collection = ArticleCollection(items='merpflakes')
+            collection = ArticleCollection(articles='merpflakes')
             assert False
         except AssertionError as e:
             assert True
 
     def test_first(self):
-        collection = ArticleCollection(items=self.articles)
+        collection = ArticleCollection(articles=self.articles)
         self.assertEquals(self.articles[0], collection.first())
 
     def test_last(self):
-        collection = ArticleCollection(items=self.articles)
+        collection = ArticleCollection(articles=self.articles)
         self.assertEquals(self.articles[len(self.articles) - 1], \
             collection.last())
 
     def test_current(self):
-        collection = ArticleCollection(items=self.articles)
+        collection = ArticleCollection(articles=self.articles)
         collection.next()
         self.assertEquals(self.articles[1], collection.current())
 
     def test_rewind(self):
-        collection = ArticleCollection(items=self.articles)
+        collection = ArticleCollection(articles=self.articles)
         collection.next()
         collection.next()
         collection.next()
@@ -56,7 +56,7 @@ class ArticleCollectionTest(unittest.TestCase):
         self.assertEquals(self.articles[0], collection.current())
 
     def test_sort(self):
-        collection = ArticleCollection(items=self.articles)
+        collection = ArticleCollection(articles=self.articles)
 
         first = collection.first()
         last  = collection.last()
@@ -72,7 +72,7 @@ class ArticleCollectionTest(unittest.TestCase):
             , Article(filename='2013-07-02-b-title.txt')
         ]
 
-        collection = ArticleCollection(items=articles)
+        collection = ArticleCollection(articles=articles)
 
         first = collection.first()
         last  = collection.last()
@@ -82,8 +82,8 @@ class ArticleCollectionTest(unittest.TestCase):
         self.assertEquals(collection.first(), last)
         self.assertEquals(collection.last(), first)
 
-    def test_getitem(self):
-        collection = ArticleCollection(items=self.articles)
+    def test_getarticle(self):
+        collection = ArticleCollection(articles=self.articles)
 
         try:
             collection[1]
@@ -92,8 +92,8 @@ class ArticleCollectionTest(unittest.TestCase):
         except:
             assert False
 
-    def test_out_of_range_getitem(self):
-        collection = ArticleCollection(items=self.articles)
+    def test_out_of_range_getarticle(self):
+        collection = ArticleCollection(articles=self.articles)
 
         try:
             collection[9999]
@@ -102,19 +102,19 @@ class ArticleCollectionTest(unittest.TestCase):
             assert True
 
     def test_len(self):
-        collection = ArticleCollection(items=self.articles)
+        collection = ArticleCollection(articles=self.articles)
 
         self.assertEquals(len(collection), len(self.articles))
 
     def test_append(self):
-        collection = ArticleCollection(items=self.articles)
+        collection = ArticleCollection(articles=self.articles)
         article = Article(filename='2013-07-02-a-title.txt')
         collection.append(article)
 
         self.assertEquals(article.title, collection.last().title)
 
     def test_extend(self):
-        collection = ArticleCollection(items=self.articles)
+        collection = ArticleCollection(articles=self.articles)
         articles = [
               Article(filename='2013-07-02-a-title.txt')
             , Article(filename='2013-07-02-b-title.txt')
@@ -141,12 +141,12 @@ class ArticleCollectionTest(unittest.TestCase):
             assert True
 
     def test_to_json(self):
-        collection = ArticleCollection(items=self.articles)
+        collection = ArticleCollection(articles=self.articles)
         json = collection.to_json()
         collection.is_valid(collection)
 
     def test_iterable(self):
-        collection = ArticleCollection(items=self.articles)
+        collection = ArticleCollection(articles=self.articles)
         try:
             for article in collection:
                 pass

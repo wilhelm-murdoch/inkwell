@@ -261,10 +261,10 @@ class Article(object):
         """ Creates class instance and assigns properties.
 
         Arguments::
-            filename str the name of article's file.
-            kwargs['title'] str official article title
-            kwargs['body'] str the main body of the article
-            kwargs['meta'] dict containing additional metadata properties
+            filename        str  the name of article's file.
+            kwargs['title'] str  official article title
+            kwargs['body']  str  the main body of the article
+            kwargs['meta']  dict containing additional metadata properties
 
         Raises::
             ValueError for invalid filename values
@@ -294,10 +294,18 @@ class Article(object):
 
     @property
     def title(self):
+        """Returns the current article's title."""
         return self._title
 
     @title.setter
     def title(self, title=None):
+        """Sets the current article's title. If one is not specified, this method
+        will fall back upon the <title> portion of the ARTICLE_FILE_PATTERN and
+        attempt to unslugify it.
+
+        Arguments::
+            title str,None the title of the article
+        """
         if title:
             self._title = title
         else:
@@ -305,10 +313,17 @@ class Article(object):
 
     @property
     def date(self):
+        """Returns the current article's date."""
         return self._date
 
     @date.setter
     def date(self, date):
+        """Sets the current article's date. This is derived from the article's
+        specified filename.
+
+        Arguments::
+            date datetime the current article's date
+        """
         assert isinstance(date, datetime)
         self._date = date
 
@@ -371,73 +386,207 @@ class Article(object):
         return None
 
 class ArticleCollection(object):
+    """ Class `inkwell.reader.ArticleCollection` is an iterable collection of
+    `inkwell.reader.Article` instances. This class is useful to people who
+    wish to use Inkwell as an internal module rather than a server or
+    blueprint.
+
+    Usage::
+        articles = [
+              Article(filename='2013-07-02-a-title.txt')
+            , Article(filename='2013-07-02-b-title.txt')
+        ]
+
+        collection = ArticleCollection(articles=articles)
+
+        for article in collection:
+            print article.title
+
+        >>> A Title
+        >>> B Title
+    """
     def __init__(self, **kwargs):
-        self.items = kwargs.get('items', [])
+        """ Creates class instance and assigns properties.
+
+        Arguments::
+            kwargs['articles'] list a list of `inkwell.reader.Article` instances
+        """
+        self.articles = kwargs.get('articles', [])
         self._current_index = 0
 
     @property
-    def items(self):
-        return self._items
+    def articles(self):
+        """Returns the current collection of articles."""
+        return self._articles
 
-    @items.setter
-    def items(self, items):
-        assert isinstance(items, list)
-        assert self.is_valid(items), 'items must be a list of class Article instances.'
-        self._items = items
+    @articles.setter
+    def articles(self, articles):
+        """Sets the current collection of articles. If there are already
+        articles assocaited with the current ArticleCollection instance, they
+        will be replaced by the specified list.
+
+        Raises:
+            AssertionError if not a valid list of Article instances.
+        """
+        assert isinstance(articles, list)
+        assert self.is_valid(articles), 'articles must be a list of class Article instances.'
+        self._articles = articles
 
     def first(self):
-        return self.items[0]
+        """Returns the first article in the collection, or None if the current
+        collection is empty.
+
+        Returns::
+            `inkwell.reader.Article` instance or None
+        """
+        if not self.articles:
+            return None
+        return self.articles[0]
 
     def last(self):
-        return self.items[len(self.items) - 1]
+        """Returns the last article in the collection, or None if the current
+        collection is empty.
+
+        Returns::
+            `inkwell.reader.Article` instance or None
+        """
+        if not self.articles:
+            return None
+        return self.articles[len(self.articles) - 1]
 
     def current(self):
-        return self.items[self._current_index]
+        """Returns the article at the current position within the iterator, or
+        None if the collection is empty.
+
+        Returns::
+            `inkwell.reader.Article` instance or None
+        """
+        if not self.articles:
+            return None
+        return self.articles[self._current_index]
 
     def rewind(self):
+        """Rewinds the current position of the iterator to the first article in
+        the collection.
+        """
         self._current_index = 0
 
     def next(self):
+        """Returns the article immediately after the iterators current position
+        in the collection. If the end of the collection has been reached, this
+        method will raise an IndexError.
+
+        Returns::
+            `inkwell.reader.Article` instance
+
+        Raises::
+            IndexError if attempting to move past the end of the collection.
+        """
         try:
-            next = self.items[self._current_index + 1]
+            next = self.articles[self._current_index + 1]
             self._current_index += 1
             return next
         except IndexError:
             raise
 
     def sort(self, by, reverse=False):
+        """A custom sorting implementation that allows the current collection
+        to be sorted by arbitrary article properties. These properties can be
+        any metadata set on the article level. This method also supports the
+        use of a custom sort via lambda function. Take a look at the unit tests
+        to get a good idea of how to make use of this.
+
+        Arguments::
+            by      property|lambda the property to sort by
+            reverse boolean         determines the direction of the sort
+
+        Returns::
+            A sorted collection of articles.
+        """
         if isinstance(by, type(lambda: None)) and by.__name__ == '<lambda>':
-            self.items.sort(key=by, reverse=reverse)
+            self.articles.sort(key=by, reverse=reverse)
         else:
-            self.items.sort(key=lambda x: getattr(x, by), reverse=reverse)
-        return self.items
+            self.articles.sort(key=lambda x: getattr(x, by), reverse=reverse)
+        return self.articles
 
     def __getitem__(self, i):
-        return self.items[i]
+        """Implements collection access by index.
+
+        Arguments::
+            i int index pointing to the desired article in the current
+            collection
+
+        Returns::
+            The desired article.
+
+        Raises::
+            IndexError if the specified index is out of range.
+        """
+        return self.articles[i]
 
     def __len__(self):
-        return len(self.items)
+        """Implements len() functionality for the collection.
+
+        Returns::
+            Integer representing the size of the current collection.
+        """
+        return len(self.articles)
 
     def __iter__(self):
-        for item in self.items:
-            yield item
+        """Returns a generator to iterate through the current collection.
 
-    def extend(self, items):
-        assert isinstance(items, list)
-        assert self.is_valid(items), 'items must be a list of class Article instances.'
-        self.items.extend(items)
+        Returns::
+            generator yielding articles
+        """
+        for article in self.articles:
+            yield article
 
-    def append(self, item):
-        assert isinstance(item, Article), 'item must be an instance of class Article.'
-        self.items.append(item)
+    def extend(self, articles):
+        """Merges a list of articles with the current collection.
 
-    def is_valid(self, items):
-        if not isinstance(items, list):
-            items = [items]
-        for index, item in enumerate(items):
-            if not isinstance(item, Article):
+        Arguments::
+            articles list A collection of `inkwell.reader.Article` instances.
+
+        Raises::
+            AssertionError if the specified list of articles is invalid.
+        """
+        assert isinstance(articles, list)
+        assert self.is_valid(articles), 'articles must be a list of class Article instances.'
+        self.articles.extend(articles)
+
+    def append(self, article):
+        """Adds an article instance to the end of the collection.
+
+        Arguments::
+            article object instance of `inkwell.reader.Article
+
+        Raises::
+            AssertionError if the specified article is invalid.
+        """
+        assert isinstance(article, Article), 'article must be an instance of class Article.'
+        self.articles.append(article)
+
+    def is_valid(self, articles):
+        """ Validates an article, or list of articles, and ensures they are all
+        instances of `inkwell.reader.Article`.
+
+        Arguments::
+            articles list a single article or list of articles.
+
+        Returns::
+            Boolean depending on the validity of the list.
+        """
+        if not isinstance(articles, list):
+            articles = [articles]
+        for index, article in enumerate(articles):
+            if not isinstance(article, Article):
                 return False
         return True
 
     def to_json(self):
-        return self.items
+        """ Returns a JSON representation of the current article collection.
+
+        Returns::
+            A list of `inkwell.reader.Article` instances.
+        """
+        return self.articles
