@@ -1,0 +1,15 @@
+title: Welcome to Inkwell!
+
+If you're reading this, it means that everything works! Be sure to read up on all the documentation so you can get the most out of Inkwell.
+
+Here are a few links to help get you started:
+
+1. [Fork the project and contribute.](https://github.com/wilhelm-murdoch/inkwell)
+2. [Bugs and suggestions go on the issue tracker.](https://github.com/wilhelm-murdoch/inkwell/issues)
+3. [Read the wiki.](https://github.com/wilhelm-murdoch/inkwell/wiki)
+4. [Integrate Inkwell with Quill](https://github.com/wilhelm-murdoch/quill)
+
+Thank you for trying it out!
+
+_Wilhelm Murdoch_
+
