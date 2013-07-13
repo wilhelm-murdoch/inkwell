@@ -5,7 +5,7 @@ from ..exceptions import NotFound, InternalServerError
 class Article(ApiEndpoint):
     def get(self, year, month, day, title):
         try:
-            article = self.app.reader.fetch_article(
+            article = self.reader.fetch_article(
                   year=year
                 , month=month
                 , day=day

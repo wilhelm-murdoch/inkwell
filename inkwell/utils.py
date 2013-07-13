@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import request, current_app, json, make_response
 from flask.views import MethodView
-from reader import Article, ArticleCollection
+from reader import Reader, Article, ArticleCollection
 from datetime import date, datetime
 
 def json_presenter(f):
@@ -71,6 +71,11 @@ class ApiEndpoint(MethodView):
 
     decorators = [json_presenter]
 
+    def __init__(self):
+        super(ApiEndpoint, self).__init__()
+
+        self.reader = Reader(articles_folder=current_app.config.get('ARTICLES_FOLDER'))
+
     @property
     def config(self):
         """ Returns the current app instance's loaded configuration. """
@@ -85,6 +90,17 @@ class ApiEndpoint(MethodView):
     def app(self):
         """ Returns the current instance of the Inkwell server. """
         return current_app
+
+    @property
+    def reader(self):
+        """ Returns the current instance of the Reader. """
+        return self._reader
+
+    @reader.setter
+    def reader(self, reader):
+        """ Sets the reader for the current request. """
+        assert isinstance(reader, Reader)
+        self._reader = reader
 
     @property
     def logger(self):

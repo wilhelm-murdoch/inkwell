@@ -72,6 +72,5 @@ def bootstrap(configuration=None):
 
     app.config.from_object(configuration or 'inkwell.config.LocalConfig')
     app.register_blueprint(api)
-    app.reader = Reader(articles_folder=app.config.get('ARTICLES_FOLDER'))
 
     return app

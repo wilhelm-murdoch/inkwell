@@ -66,7 +66,8 @@ class Reader(object):
             raise IOError, "article path {} is invalid".format(path)
         self._articles_folder = path
 
-    def list(self, by_year=None, by_month=None, by_day=None):
+    def list(self, by_year=None, by_month=None, by_day=None, limit=None, \
+        offset=None):
         """ Responsible for searching the specified articles folder for files
         that match ARTICLE_FILE_SEARCH_PATTERN. Returns an instance of
         `inkwell.reader.ArticleCollection` if any articles are found.
@@ -77,12 +78,19 @@ class Reader(object):
             by_year  str Four-digit number representing the article year
             by_month str Two-digit number representing the article month
             by_day   str Two-digit number representing the article day
+            limit    int Number of articles to return
+            offset   int Position from which to collect articles
 
         Returns::
             instance of `inkwell.reader.ArticleCollection`
         """
-        articles = ArticleCollection()
-        for filename in self._filter_articles(by_year, by_month, by_day):
+        articles  = ArticleCollection()
+        filenames = self._filter_articles(by_year, by_month, by_day)
+
+        if limit:
+            filenames = filenames[offset:limit]
+
+        for filename in filenames:
             article = self.fetch_article(filename=filename)
             if article:
                 articles.append(article)
@@ -290,6 +298,7 @@ class Article(object):
                 if key.lower() not in self.IGNORED_META_TAGS:
                     setattr(self, key, value)
 
+        self.meta['slug']  = self.matched.group('title')
         self.meta['title'] = self.title
         self.meta['date']  = self.date
 
