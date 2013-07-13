@@ -2,6 +2,7 @@
 import os
 import re
 import yaml
+import markdown
 from dateutil import parser
 from datetime import datetime
 
@@ -355,7 +356,7 @@ class Article(object):
         """
         return {
               'meta': self.meta
-            , 'body': self.body
+            , 'body': markdown.markdown(self.body)
         }
 
     def _unslugify(self, string):
