@@ -75,9 +75,9 @@ class Reader(object):
         Optional arguments can be used to filter articles by date.
 
         Arguments::
-            by_year  str Four-digit number representing the article year
-            by_month str Two-digit number representing the article month
-            by_day   str Two-digit number representing the article day
+            by_year  int Four-digit number representing the article year
+            by_month int Two-digit number representing the article month
+            by_day   int Two-digit number representing the article day
             limit    int Number of articles to return
             offset   int Position from which to collect articles
 
@@ -119,6 +119,11 @@ class Reader(object):
             year  = kwargs.get('year', None)
             month = kwargs.get('month', None)
             day   = kwargs.get('day', None)
+
+            year  = "%02d" % (int(year),) if year else None
+            month = "%02d" % (int(month),) if month else None
+            day   = "%02d" % (int(day),) if day else None
+
             title = kwargs.get('title', None)
 
             if not year and not month and not day and not title:
@@ -184,14 +189,19 @@ class Reader(object):
         filter files by date elements.
 
         Arguments::
-            year  str Four-digit number representing the article year
-            month str Two-digit number representing the article month
-            day   str Two-digit number representing the article day
+            year  int Four-digit number representing the article year
+            month int Two-digit number representing the article month
+            day   int Two-digit number representing the article day
 
         Returns::
             A string containing the appropriate regular expression to filter
             all files in the given directory, or to filter them by date.
         """
+
+        year  = "%02d" % (int(year),) if year else None
+        month = "%02d" % (int(month),) if month else None
+        day   = "%02d" % (int(day),) if day else None
+
         return ARTICLE_FILE_SEARCH_PATTERN % (
               year  or '\d{4}'
             , month or '\d{2}'
@@ -298,9 +308,18 @@ class Article(object):
                 if key.lower() not in self.IGNORED_META_TAGS:
                     setattr(self, key, value)
 
-        self.meta['slug']  = self.matched.group('title')
         self.meta['title'] = self.title
         self.meta['date']  = self.date
+        self.meta['slug']  = self.matched.group('title')
+        self.meta['year']  = self.matched.group('year')
+        self.meta['month'] = self.matched.group('month')
+        self.meta['day']   = self.matched.group('day')
+        self.meta['path']  = "{}/{}/{}/{}".format(
+              self.matched.group('year')
+            , self.matched.group('month')
+            , self.matched.group('day')
+            , self.matched.group('title')
+        )
 
     @property
     def title(self):

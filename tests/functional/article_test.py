@@ -30,4 +30,5 @@ class ArticleTest(unittest.TestCase):
     def test_article_not_found(self):
         response = fixtures.client.get('/inkwell/9999/99/99/not-found', \
             headers={'Accept': 'application/json'})
+
         self.assertEquals(response.status_code, 404)

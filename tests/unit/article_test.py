@@ -83,6 +83,16 @@ class ArticleTest(unittest.TestCase):
               'meta': {
                   'title': article._unslugify(matched.group('title'))
                 , 'date': date
+                , 'slug': matched.group('title')
+                , 'year': matched.group('year')
+                , 'month': matched.group('month')
+                , 'day': matched.group('day')
+                , 'path': "{}/{}/{}/{}".format(
+                      matched.group('year')
+                    , matched.group('month')
+                    , matched.group('day')
+                    , matched.group('title')
+                )
               }
             , 'body': ''
         })

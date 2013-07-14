@@ -35,27 +35,27 @@ class ReaderTest(unittest.TestCase):
         self.assertEquals(len(articles), len(fixtures.valid_files))
 
     def test_list_by_year(self):
-        articles = self.reader.list(by_year='1900')
+        articles = self.reader.list(by_year=1900)
         self.assertEquals(len(articles), 1)
 
-        articles = self.reader.list(by_year='2099')
+        articles = self.reader.list(by_year=2099)
         self.assertEquals(len(articles), 0)
 
-        articles = self.reader.list(by_year='2013')
+        articles = self.reader.list(by_year=2013)
         self.assertEquals(len(articles), 3)
 
-        articles = self.reader.list(by_year='2014')
+        articles = self.reader.list(by_year=2014)
         self.assertEquals(len(articles), 1)
 
     def test_list_by_year_and_month(self):
-        articles = self.reader.list(by_year='1900', by_month='07')
+        articles = self.reader.list(by_year=1900, by_month=7)
         self.assertEquals(len(articles), 1)
 
     def test_list_by_year_month_and_day(self):
-        articles = self.reader.list(by_year='2013', by_month='07', by_day='01')
+        articles = self.reader.list(by_year=2013, by_month=7, by_day=1)
         self.assertEquals(len(articles), 1)
 
-        articles = self.reader.list(by_year='2013', by_month='07', by_day='02')
+        articles = self.reader.list(by_year=2013, by_month=7, by_day=2)
         self.assertEquals(len(articles), 1)
 
     def test_fetch_valid_article(self):
@@ -64,16 +64,16 @@ class ReaderTest(unittest.TestCase):
         self.assertTrue(isinstance(article, inkwell.reader.Article))
 
     def test_fetch_valid_article_without_filename(self):
-        article = self.reader.fetch_article(year='1900', month='07', \
-            day='03', title='lorem-ipsum-example-old')
+        article = self.reader.fetch_article(year=1900, month=7, \
+            day=3, title='lorem-ipsum-example-old')
 
         self.assertEquals('Lorem Ipsum Example Old', article.title)
         self.assertTrue(isinstance(article.date, datetime))
         self.assertTrue(isinstance(article, inkwell.reader.Article))
 
     def test_fetch_invalid_article(self):
-        article = self.reader.fetch_article(year='2009', month='04', \
-            day='01', title='ohoneos')
+        article = self.reader.fetch_article(year=2009, month=04, \
+            day=1, title='ohoneos')
 
         self.assertFalse(article)
 
@@ -92,27 +92,27 @@ class ReaderTest(unittest.TestCase):
         filter = self.reader._build_filter_pattern()
         self.assertEquals(filter, r'^\d{4}\-\d{2}\-\d{2}\-.*\.txt$')
 
-        filter = self.reader._build_filter_pattern(year='1900')
+        filter = self.reader._build_filter_pattern(year=1900)
         self.assertEquals(filter, r'^1900\-\d{2}\-\d{2}\-.*\.txt$')
 
-        filter = self.reader._build_filter_pattern(year='1900', month='01')
+        filter = self.reader._build_filter_pattern(year=1900, month=1)
         self.assertEquals(filter, r'^1900\-01\-\d{2}\-.*\.txt$')
 
-        filter = self.reader._build_filter_pattern(year='1900', month='01', \
-            day='01')
+        filter = self.reader._build_filter_pattern(year=1900, month=1, \
+            day=1)
         self.assertEquals(filter, r'^1900\-01\-01\-.*\.txt$')
 
     def test_filter_articles(self):
         articles = self.reader._filter_articles()
         self.assertEquals(len(fixtures.valid_files), len(articles))
 
-        articles = self.reader._filter_articles(year='2013')
+        articles = self.reader._filter_articles(year=2013)
         self.assertEquals(len(articles), 3)
 
-        articles = self.reader._filter_articles(month='07')
+        articles = self.reader._filter_articles(month=7)
         self.assertEquals(len(articles), len(fixtures.valid_files))
 
-        articles = self.reader._filter_articles(year='2013', month='07')
+        articles = self.reader._filter_articles(year=2013, month=7)
         self.assertEquals(len(articles), 3)
 
     def test_article_file_pattern(self):
