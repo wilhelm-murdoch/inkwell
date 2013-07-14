@@ -1,6 +1,8 @@
 # Inkwell
 
-A teeny-tiny git-powered blogging platform written in Python and heavily inspired by its Ruby counterpart [Toto](https://github.com/cloudhead/toto) created by [Alexis Sellier](https://github.com/cloudhead).
+WORK IN PROGRESS
+
+A teeny-tiny git-powered blogging platform written in Python and inspired by its Ruby counterpart [Toto](https://github.com/cloudhead/toto) created by [Alexis Sellier](https://github.com/cloudhead).
 
 ## Philosophy
 
@@ -11,7 +13,8 @@ A teeny-tiny git-powered blogging platform written in Python and heavily inspire
 * articles are processed through a markdown converter by default.
 * templating is completely powered by [AngularJS](http://angularjs.org).
 * inkwell is built on top of [Flask](http://flask.pocoo.org/).
-* inkwell can be used as a standalone server, a [Flask blueprint](http://flask.pocoo.org/docs/blueprints/) or directly access as a Python module.
+* inkwell exposes a very simple RESTful JSON API to interact with article content.
+* inkwell can be used as a standalone server, a [Flask blueprint](http://flask.pocoo.org/docs/blueprints/), or directly accessed as a Python module.
 * inkwell was built to take advantage of HTTP caching.
 * inkwell was built with [Heroku](https://www.heroku.com/) in mind.
 * comments are handled by [disqus](http://disqus.com/) by default.
@@ -19,36 +22,6 @@ A teeny-tiny git-powered blogging platform written in Python and heavily inspire
 * the archives can be accessed by year, month or day.
 * arbitrary metadata can be included in articles files, and accessed from the templates.
 * optionally, inkwell can use a themed frontend, named [Quill](https://github.com/wilhelm-murdoch/quill), to provide a browser interface.
-
-## Quill
-
-Inkwell can be run on its own if you want a basic RESTful API to deliver your article content, but what's an API without a client? This is where [Quill](https://github.com/wilhelm-murdoch/quill) comes in. It's the default theme for Inkwell written using AngularJS, making it a perfect option to power a RESTful client.
-
-The way Quill works is it implements Inkwell as a Flask blueprint and then runs itself as a server. You interact with Quill through your browser and it calls its local Inkwell API to interact with your content.
-
-You implement Quill by first forking, or cloning, the project and running the following commands:
-
-```
-$: git clone git://github.com/wilhelm-murdoch/quill.git weblog
-$: cd weblog
-$: make install
-```
-
-In most cases, this is all you need to do to get a build of Quill installed.
-
-To run Quill, execute the following command:
-
-```
-$: make run
-env INKWELL_CONFIG_MODULE=quill.config.LocalConfig python app.py
-Quill running in local on port 8080 ...
- * Running on http://127.0.0.1:8080/
- * Restarting with reloader
-```
-
-Now go to `http://127.0.0.1:8080/` in your browser window and you should see the default article. You are now ready to start writing your own articles!
-
-## A Quick Tour
 
 ## Installation
 
@@ -74,6 +47,54 @@ Alternatively, you can use the following make targets for local development:
 Or, add the following line to a `requirements.txt` file if you wish to use Inkwell as a module in another project:
 
     -e git+ssh://git@github.com/wilhelm-murdoch/inkwell.git#egg=inkwell
+
+## Quill
+
+Inkwell can be run on its own if you want a basic RESTful API to deliver your article content, but what's an API without a client? This is where [Quill](https://github.com/wilhelm-murdoch/quill) comes in. It's the default theme for Inkwell written using AngularJS, making it a perfect option to power a RESTful client.
+
+The way Quill works is it implements Inkwell as a Flask blueprint and then runs itself as a server. You interact with Quill through your browser and it calls its local Inkwell API to interact with your content.
+
+You implement Quill by first forking, or cloning, the project and running the following commands:
+
+```
+$: git clone git://github.com/wilhelm-murdoch/quill.git weblog
+$: cd weblog
+$: make install
+```
+
+In most cases, this is all you need to do to get a build of Quill installed.
+
+To run Quill, execute the following command:
+
+```
+$: make run
+env INKWELL_CONFIG_MODULE=quill.config.LocalConfig python app.py
+Quill running in local on port 8080 ...
+ * Running on http://127.0.0.1:8080/
+```
+
+Now go to `http://127.0.0.1:8080/` in your browser window and you should see the default article. You are now ready to start writing your own articles!
+
+## Writing Articles
+
+Here is an example of an article:
+
+```
+title: I'm Henry, the VIII, I am
+time: 10:30
+tags:
+- music
+- Herman's Hermits
+
+I'm Henry, the VIII, I am
+Henry, the VIII, I am, I am
+I got married to the widow next door
+She's been married seven times before
+```
+
+The top portion is the header block.
+
+## Configuration
 
 ## Inkwell API
 
