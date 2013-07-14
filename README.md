@@ -1,9 +1,5 @@
 # Inkwell
 
-These docs are currently under construction. While Inkwell is pretty much done, it needs a client to run it. That's where [Quill](https://github.com/wilhelm-murdoch/quill) comes in... which is something I'm still working on.
-
-So far ...
-
 Inkwell is a Flask blueprint, or stand-alone server, which supports a Git-based blogging platform.
 
 ## Installation
@@ -30,3 +26,5 @@ Alternatively, you can use the following make targets for local development:
 Or, add the following line to a `requirements.txt` file if you wish to use Inkwell as a module in another project:
 
     -e git+ssh://git@github.com/wilhelm-murdoch/inkwell.git#egg=inkwell
+
+## API
