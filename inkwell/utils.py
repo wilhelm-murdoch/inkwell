@@ -17,6 +17,13 @@ def json_presenter(f):
         response = make_response(json.dumps(result, cls=Encoder))
         response.headers['Content-Type'] = 'application/json; charset=utf-8'
 
+        if current_app.config['ENVIRONMENT'] == 'production':
+             cache = "public, max-age={}".format(\
+                current_app.config['CACHE_TTL'])
+        else:
+             cache = 'no-cache, must-revalidate'
+        response.headers['Cache-Control'] = cache
+
         return response
     return decorator
 

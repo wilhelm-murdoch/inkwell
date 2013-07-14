@@ -5,6 +5,7 @@ class Config(object):
     HOST = '127.0.0.1'
     PORT = 9001
     TESTING = False
+    CACHE_TTL = 28800
     ARTICLES_FOLDER = 'articles'
 
 class LocalConfig(Config):
