@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from ..utils import ApiEndpoint
-from ..exceptions import InternalServerError
+from ..exceptions import InternalServerError, NotFound
+from datetime import datetime
 
 class Archive(ApiEndpoint):
     def get(self, year=None, month=None, day=None):
@@ -15,6 +16,8 @@ class Archive(ApiEndpoint):
                 , limit=limit
                 , offset=offset
             )
+        except ValueError:
+            raise NotFound
         except Exception as e:
             raise InternalServerError, e.message
 

@@ -11,6 +11,8 @@ class Article(ApiEndpoint):
                 , day=day
                 , title=title
             )
+        except ValueError:
+            raise NotFound
         except Exception as e:
             raise InternalServerError, e.message
 

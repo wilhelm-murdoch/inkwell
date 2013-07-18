@@ -85,7 +85,8 @@ class Reader(object):
             instance of `inkwell.reader.ArticleCollection`
         """
         articles  = ArticleCollection()
-        filenames = self._filter_articles(by_year, by_month, by_day)
+        filenames = sorted(self._filter_articles(by_year, by_month, by_day),\
+            reverse=True)
 
         if limit:
             filenames = filenames[offset:limit]
@@ -198,9 +199,12 @@ class Reader(object):
             all files in the given directory, or to filter them by date.
         """
 
-        year  = "%02d" % (int(year),) if year else None
-        month = "%02d" % (int(month),) if month else None
-        day   = "%02d" % (int(day),) if day else None
+        try:
+            year  = "%02d" % (int(year),) if year else None
+            month = "%02d" % (int(month),) if month else None
+            day   = "%02d" % (int(day),) if day else None
+        except:
+            raise ValueError, 'year, month and day must be of type int'
 
         return ARTICLE_FILE_SEARCH_PATTERN % (
               year  or '\d{4}'
