@@ -80,9 +80,9 @@ class ArticleTest(unittest.TestCase):
         ))
 
         self.assertEquals(article.to_json(), {
-              'meta': {
-                  'title': article._unslugify(matched.group('title'))
-                , 'date': date
+                'title': article._unslugify(matched.group('title'))
+              , 'meta': {
+                  'date': date
                 , 'slug': matched.group('title')
                 , 'year': matched.group('year')
                 , 'month': matched.group('month')
@@ -95,7 +95,29 @@ class ArticleTest(unittest.TestCase):
                 )
               }
             , 'body': ''
+            , 'summary': False
         })
+
+    def test_article_has_summary(self):
+        filename = '2013-07-28-summary-test.txt'
+        meta = {
+              'title': 'I should have a summary!'
+            , 'summary': 'This is a summary!'
+        }
+
+        article = Article(filename=filename, meta=meta).to_json()
+
+        self.assertEquals(article['summary'], '<p>This is a summary!</p>')
+
+    def test_article_has_no_summary(self):
+        filename = '2013-07-28-summary-test.txt'
+        meta = {
+            'title': 'I should have a summary!'
+        }
+
+        article = Article(filename=filename, meta=meta).to_json()
+
+        self.assertFalse(article['summary'])
 
     def test_unslugify(self):
         for filename in fixtures.valid_files:

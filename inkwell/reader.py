@@ -85,6 +85,9 @@ class Reader(object):
             instance of `inkwell.reader.ArticleCollection`
         """
         articles  = ArticleCollection()
+
+        # Get the entire list of article filenames and sort them chronologically
+        # in descending order by default.
         filenames = sorted(self._filter_articles(by_year, by_month, by_day),\
             reverse=True)
 
@@ -278,7 +281,7 @@ class Article(object):
     """
 
     """ This is a list containing reserved metadata keywords. """
-    IGNORED_META_TAGS = ['date']
+    IGNORED_META_TAGS = ['date', 'summary']
 
     def __init__(self, filename, **kwargs):
         """ Creates class instance and assigns properties.
@@ -312,7 +315,10 @@ class Article(object):
                 if key.lower() not in self.IGNORED_META_TAGS:
                     setattr(self, key, value)
 
-        self.meta['title'] = self.title
+        # Give 'summary' special treatment:
+        if 'summary' in self.meta:
+            self.summary = self.meta['summary']
+
         self.meta['date']  = self.date
         self.meta['slug']  = self.matched.group('title')
         self.meta['year']  = self.matched.group('year')
@@ -345,6 +351,24 @@ class Article(object):
             self._title = self._unslugify(self.matched.group('title'))
 
     @property
+    def summary(self):
+        """Returns the current article's summary (if specified in the meta
+        block.
+        """
+        return self._summary
+
+    @summary.setter
+    def summary(self, summary=None):
+        """Sets the current article's summary. This value is automatically
+        pull from the meta block if it exists. Otherwise, it can be explicitly
+        set.
+
+        Arguments::
+            summary str the current article's summary
+        """
+        self._summary = summary
+
+    @property
     def date(self):
         """Returns the current article's date."""
         return self._date
@@ -368,27 +392,32 @@ class Article(object):
             article = Article(
                   filename='2013-07-12-example.txt'
                 , title='Another Example'
-                , meta={'tags': ['foo', 'bar'], 'time': '12:34:00'}
+                , meta={'tags': ['foo', 'bar'], 'time': '12:34:00', 'summary':
+                    'Read this article!'}
                 , body='This is a body'
             )
 
             print article.to_json()
             >>> {
-                'meta': {
-                      'title': 'Another Example'
-                    , 'tags': ['foo', 'bar']
+                  'title': 'Another Example'
+                , 'summary': '<p>Read this article!</p>'
+                , 'body': '<p>This is a body</p>'
+                , 'meta': {
+                      'tags': ['foo', 'bar']
                     , 'date': '2013-07-12T00:00:00Z'
                     , 'time': '12:34:00'
                 }
-                , 'body': 'This is a body'
             }
 
         Returns::
             dictionary containing the JSON output for the article.
         """
         return {
-              'meta': self.meta
+              'title': self.title
+            , 'summary': markdown.markdown(self.summary) if self.summary else
+                False
             , 'body': markdown.markdown(self.body)
+            , 'meta': self.meta
         }
 
     def _unslugify(self, string):
