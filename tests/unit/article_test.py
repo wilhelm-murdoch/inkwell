@@ -94,7 +94,7 @@ class ArticleTest(unittest.TestCase):
                     , matched.group('title')
                 )
               }
-            , 'body': ''
+            , 'body': False
             , 'summary': False
         })
 
