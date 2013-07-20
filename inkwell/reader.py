@@ -412,11 +412,12 @@ class Article(object):
         Returns::
             dictionary containing the JSON output for the article.
         """
+        summary = markdown.markdown(self.summary, extensions=['fenced_code'])
+        body    = markdown.markdown(self.body, extensions=['fenced_code'])
         return {
               'title': self.title
-            , 'summary': markdown.markdown(self.summary) if self.summary else
-                False
-            , 'body': markdown.markdown(self.body)
+            , 'summary': summary if self.summary else False
+            , 'body': body if self.body else False
             , 'meta': self.meta
         }
 
