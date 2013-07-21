@@ -316,8 +316,10 @@ class Article(object):
                     setattr(self, key, value)
 
         # Give 'summary' special treatment:
-        if 'summary' in self.meta:
-            self.summary = self.meta['summary']
+        if 'summary' in self.meta and self.meta['summary'] is True:
+            summary, body = self.body.split('\n\n', 1)
+            self.summary = summary
+            self.body    = body
 
         self.meta['date']  = self.date
         self.meta['slug']  = self.matched.group('title')
@@ -358,13 +360,15 @@ class Article(object):
         return self._summary
 
     @summary.setter
-    def summary(self, summary=None):
-        """Sets the current article's summary. This value is automatically
-        pull from the meta block if it exists. Otherwise, it can be explicitly
-        set.
+    def summary(self, summary=False):
+        """Sets the current article's summary. If this field exists within the
+        meta block and it is set to 'True', the first paragraph of the body will
+        be designated as the summary. Just as with the header block, everything
+        before the first `\n\n` will become the summary. All else will be the
+        article body.
 
         Arguments::
-            summary str the current article's summary
+            summary bool whether, or not, to create a summary from the body
         """
         self._summary = summary
 
@@ -393,19 +397,20 @@ class Article(object):
                   filename='2013-07-12-example.txt'
                 , title='Another Example'
                 , meta={'tags': ['foo', 'bar'], 'time': '12:34:00', 'summary':
-                    'Read this article!'}
-                , body='This is a body'
+                    True}
+                , body='This is a summary.\n\nThis is a body.'
             )
 
             print article.to_json()
             >>> {
                   'title': 'Another Example'
-                , 'summary': '<p>Read this article!</p>'
-                , 'body': '<p>This is a body</p>'
+                , 'summary': '<p>This is a summary.</p>'
+                , 'body': '<p>This is a body.</p>'
                 , 'meta': {
                       'tags': ['foo', 'bar']
                     , 'date': '2013-07-12T00:00:00Z'
                     , 'time': '12:34:00'
+                    , 'summary': True
                 }
             }
 

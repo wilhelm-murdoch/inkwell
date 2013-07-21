@@ -102,12 +102,14 @@ class ArticleTest(unittest.TestCase):
         filename = '2013-07-28-summary-test.txt'
         meta = {
               'title': 'I should have a summary!'
-            , 'summary': 'This is a summary!'
+            , 'summary': True
         }
+        body = """This is a summary.\n\nThis is a body."""
 
-        article = Article(filename=filename, meta=meta).to_json()
+        article = Article(filename=filename, meta=meta, body=body).to_json()
 
-        self.assertEquals(article['summary'], '<p>This is a summary!</p>')
+        self.assertEquals(article['summary'], '<p>This is a summary.</p>')
+        self.assertEquals(article['body'], '<p>This is a body.</p>')
 
     def test_article_has_no_summary(self):
         filename = '2013-07-28-summary-test.txt'

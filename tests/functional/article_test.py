@@ -25,7 +25,7 @@ class ArticleTest(unittest.TestCase):
         self.assertTrue('meta' in body)
         self.assertTrue('body' in body)
         self.assertTrue('date' in body['meta'])
-        self.assertTrue('title' in body['meta'])
+        self.assertTrue('title' in body)
 
     def test_article_not_found(self):
         response = fixtures.client.get('/inkwell/9999/99/99/not-found', \
