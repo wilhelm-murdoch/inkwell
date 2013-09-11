@@ -19,7 +19,7 @@ setup(
         , 'Markdown==2.3.1'
     ],
     setup_requires=[
-          'nose==1.1.2'
+          'nose==1.3.0'
         , 'yanc==0.2.3'
         , 'mock==1.0.1'
     ]
