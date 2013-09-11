@@ -56,17 +56,6 @@ class ArticleCollectionTest(unittest.TestCase):
         self.assertEquals(self.articles[0], collection.current())
 
     def test_sort(self):
-        collection = ArticleCollection(articles=self.articles)
-
-        first = collection.first()
-        last  = collection.last()
-
-        collection.sort(by='date', reverse=True)
-
-        self.assertEquals(collection.first(), last)
-        self.assertEquals(collection.last(), first)
-
-    def test_sort_lambda(self):
         articles = [
               Article(filename='2013-07-02-a-title.txt')
             , Article(filename='2013-07-02-b-title.txt')
