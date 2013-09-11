@@ -1,3 +1,4 @@
+[![Build Status](https://drone.io/github.com/wilhelm-murdoch/inkwell/status.png)](https://drone.io/github.com/wilhelm-murdoch/inkwell/latest)
 # Inkwell
 
 WORK IN PROGRESS
