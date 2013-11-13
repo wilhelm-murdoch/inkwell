@@ -66,7 +66,7 @@ class Reader(object):
             raise IOError, "article path {} is invalid".format(path)
         self._articles_folder = path
 
-    def list(self, by_year=None, by_month=None, by_day=None, limit=None, \
+    def list(self, by_year=None, by_month=None, by_day=None, limit=None,
         offset=None):
         """ Responsible for searching the specified articles folder for files
         that match ARTICLE_FILE_SEARCH_PATTERN. Returns an instance of
@@ -88,7 +88,7 @@ class Reader(object):
 
         # Get the entire list of article filenames and sort them chronologically
         # in descending order by default.
-        filenames = sorted(self._filter_articles(by_year, by_month, by_day),\
+        filenames = sorted(self._filter_articles(by_year, by_month, by_day),
             reverse=True)
 
         if limit:
@@ -227,8 +227,11 @@ class Reader(object):
         Returns::
             A list containing any matched filenames.
         """
-        return [file for file in os.listdir(self.articles_folder) if \
-            re.match(self._build_filter_pattern(year, month, day), file)]
+        return [
+            file
+            for file in os.listdir(self.articles_folder)
+            if re.match(self._build_filter_pattern(year, month, day), file)
+        ]
 
 
 class Article(object):
@@ -340,9 +343,9 @@ class Article(object):
 
     @title.setter
     def title(self, title=None):
-        """Sets the current article's title. If one is not specified, this method
-        will fall back upon the <title> portion of the ARTICLE_FILE_PATTERN and
-        attempt to unslugify it.
+        """Sets the current article's title. If one is not specified, this
+        method will fall back upon the <title> portion of the
+        ARTICLE_FILE_PATTERN and attempt to unslugify it.
 
         Arguments::
             title str,None the title of the article
@@ -418,7 +421,7 @@ class Article(object):
             dictionary containing the JSON output for the article.
         """
         if self.summary:
-            summary = markdown.markdown(self.summary, \
+            summary = markdown.markdown(self.summary,
                 extensions=['fenced_code'])
 
         if self.body:

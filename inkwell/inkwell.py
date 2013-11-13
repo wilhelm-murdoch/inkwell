@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Blueprint, Flask, render_template, current_app
 from api import archive, article
-from utils import request_wants_json
-from reader import Reader
-from exceptions import BadRequest, NotFound, InternalServerError
+from . import reader, utils, exceptions
 
 rules = [
       ('/', archive.Archive, 'api_archive')
@@ -16,7 +14,7 @@ rules = [
 api = Blueprint('inkwell_api', __name__, url_prefix='/inkwell')
 
 for rule in rules:
-    api.add_url_rule(rule[0], view_func=rule[1].as_view(rule[2]), \
+    api.add_url_rule(rule[0], view_func=rule[1].as_view(rule[2]),
         methods=['GET'])
 
 @api.before_request
@@ -28,8 +26,8 @@ def before_request(*args, **kwargs):
     Returns::
         inkwell.exceptions.BadRequest
     """
-    if not request_wants_json():
-        raise BadRequest
+    if not utils.request_wants_json():
+        raise exceptions.BadRequest
 
 @api.errorhandler(404)
 @api.errorhandler(Exception)
@@ -50,9 +48,9 @@ def errorhandler(error):
 
     try:
         if error.code == 404:
-            raise NotFound
+            raise exceptions.NotFound
         elif error.code == 500:
-            raise InternalServerError
+            raise exceptions.InternalServerError
     except Exception as e:
         return e, e.code
 

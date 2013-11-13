@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-from ..utils import ApiEndpoint
-from ..exceptions import NotFound, InternalServerError
+from inkwell import utils, exceptions
 
-class Article(ApiEndpoint):
+class Article(utils.ApiEndpoint):
     def get(self, year, month, day, title):
         try:
             article = self.reader.fetch_article(
@@ -12,11 +11,11 @@ class Article(ApiEndpoint):
                 , title=title
             )
         except ValueError:
-            raise NotFound
+            raise exceptions.NotFound
         except Exception as e:
-            raise InternalServerError, e.message
+            raise exceptions.InternalServerError, e.message
 
         if not article:
-            raise NotFound
+            raise exceptions.NotFound
 
         return article
