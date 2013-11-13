@@ -21,6 +21,5 @@ setup(
     setup_requires=[
           'nose==1.3.0'
         , 'yanc==0.2.3'
-        , 'mock==1.0.1'
     ]
 )
