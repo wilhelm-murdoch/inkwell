@@ -2,6 +2,7 @@
 from inkwell.reader import ArticleCollection, Article
 import unittest
 from tests import fixtures
+from random import shuffle
 
 class ArticleCollectionTest(unittest.TestCase):
     def setUp(self):
@@ -56,20 +57,28 @@ class ArticleCollectionTest(unittest.TestCase):
         self.assertEquals(self.articles[0], collection.current())
 
     def test_sort(self):
+        filenames_to_titles = {
+              '2013-07-02-a-title.txt': 'A Title'
+            , '2013-07-02-b-title.txt': 'B Title'
+            , '2013-07-02-d-title.txt': 'D Title'
+            , '2013-07-02-q-title.txt': 'Q Title'
+            , '2013-07-02-t-title.txt': 'T Title'
+        }
+
         articles = [
-              Article(filename='2013-07-02-a-title.txt')
-            , Article(filename='2013-07-02-b-title.txt')
+            Article(filename=k)
+            for k in filenames_to_titles.keys()
         ]
 
-        collection = ArticleCollection(articles=articles)
+        shuffle(articles)
 
-        first = collection.first()
-        last  = collection.last()
+        collection = ArticleCollection(articles=articles).sort(by='title', reverse=True)
 
-        collection.sort(by='title', reverse=True)
+        titles = filenames_to_titles.values()
+        titles.sort(reverse=True)
 
-        self.assertEquals(collection.first(), last)
-        self.assertEquals(collection.last(), first)
+        for i, _ in enumerate(titles):
+            self.assertEquals(collection[i].title, titles[i])
 
     def test_sort_lambda(self):
         articles = [

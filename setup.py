@@ -11,6 +11,7 @@ setup(
     author='Wilhelm Murdoch',
     author_email='wilhelm.murdoch@gmail.com',
     url='http://www.devilmayco.de/',
+    namespace_packages=['inkwell'],
     packages=find_packages(exclude=['tests', 'tests.*']),
     install_requires=[
           'Flask==0.10'
