@@ -65,10 +65,8 @@ def request_wants_json():
     Returns::
         Boolean True|False depending on best guess
     """
-    best = request.accept_mimetypes.best_match(['application/json', \
-        'text/html'])
-    return best == 'application/json' and request.accept_mimetypes[best] > \
-        request.accept_mimetypes['text/html']
+    best = request.accept_mimetypes.best_match(['application/json', 'text/html'])
+    return best == 'application/json' and request.accept_mimetypes[best] > request.accept_mimetypes['text/html']
 
 
 class ApiEndpoint(MethodView):
@@ -81,7 +79,7 @@ class ApiEndpoint(MethodView):
     def __init__(self):
         super(ApiEndpoint, self).__init__()
 
-        self.reader = Reader(articles_folder=current_app.config.get('ARTICLES_FOLDER'))
+        self.reader = Reader(current_app.config.get('ARTICLES_FOLDER'))
 
     @property
     def config(self):

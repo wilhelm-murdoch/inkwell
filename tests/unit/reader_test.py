@@ -8,21 +8,18 @@ from tests import fixtures
 
 class ReaderTest(unittest.TestCase):
     def setUp(self):
-        self.reader = inkwell.reader.Reader(articles_folder=\
-            fixtures.valid_articles_folder)
+        self.reader = inkwell.reader.Reader(fixtures.valid_articles_folder)
 
     def test_invalid_article_path(self):
         try:
-            inkwell.reader.Reader(articles_folder=\
-                fixtures.invalid_articles_path)
+            inkwell.reader.Reader(fixtures.invalid_articles_path)
             assert False
         except IOError:
             assert True
 
     def test_valid_article_path(self):
         try:
-            reader = inkwell.reader.Reader(articles_folder=\
-                fixtures.valid_articles_folder)
+            reader = inkwell.reader.Reader(fixtures.valid_articles_folder)
         except IOError:
             assert False
 

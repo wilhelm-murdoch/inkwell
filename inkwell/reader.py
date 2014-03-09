@@ -18,7 +18,7 @@ class Reader(object):
 
     Usage::
 
-        reader = Reader(articles_folder='/path/to/articles')
+        reader = Reader('/path/to/articles')
 
         try:
             # Fetch all relevant articles ...
@@ -38,14 +38,13 @@ class Reader(object):
         for article in result:
             print article.title
     """
-
-    def __init__(self, **kwargs):
+    def __init__(self, articles_folder=None):
         """ Creates class instance and assigns properties.
 
         Arguments::
-            kwargs['articles_folder'] str absolute path to the articles folder.
+            articles_folder str absolute path to the articles folder.
         """
-        self.articles_folder = kwargs.get('articles_folder', None)
+        self.articles_folder = articles_folder
 
     @property
     def articles_folder(self):
@@ -84,7 +83,7 @@ class Reader(object):
         Returns::
             instance of `inkwell.reader.ArticleCollection`
         """
-        articles  = ArticleCollection()
+        articles = ArticleCollection()
 
         # Get the entire list of article filenames and sort them chronologically
         # in descending order by default.
@@ -473,7 +472,7 @@ class ArticleCollection(object):
             , Article(filename='2013-07-02-b-title.txt')
         ]
 
-        collection = ArticleCollection(articles=articles)
+        collection = ArticleCollection(articles)
 
         for article in collection:
             print article.title
@@ -481,13 +480,13 @@ class ArticleCollection(object):
         >>> A Title
         >>> B Title
     """
-    def __init__(self, **kwargs):
+    def __init__(self, articles=None):
         """ Creates class instance and assigns properties.
 
         Arguments::
-            kwargs['articles'] list a list of `inkwell.reader.Article` instances
+            articles list a list of `inkwell.reader.Article` instances
         """
-        self.articles = kwargs.get('articles', [])
+        self.articles = articles or []
         self._current_index = 0
 
     @property
