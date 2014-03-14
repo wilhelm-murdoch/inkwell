@@ -1,4 +1,4 @@
-[![Build Status](https://drone.io/github.com/wilhelm-murdoch/inkwell/status.png)](https://drone.io/github.com/wilhelm-murdoch/inkwell/latest)
+[![Build Status](https://drone.io/github.com/wilhelm-murdoch/inkwell/status.png)](https://drone.io/github.com/wilhelm-murdoch/inkwell/latest) [![Code Health](https://landscape.io/github/wilhelm-murdoch/inkwell/master/landscape.png)](https://landscape.io/github/wilhelm-murdoch/inkwell/master)
 # Inkwell
 
 WORK IN PROGRESS
