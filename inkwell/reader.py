@@ -148,9 +148,9 @@ class Reader(object):
 
         if os.path.isfile(path_to_file):
             try:
-                with open(path_to_file) as file:
-                    article = self._article_factory(file.read(), filename)
-                    file.close()
+                with open(path_to_file) as f:
+                    article = self._article_factory(f.read(), filename)
+                    f.close()
                 return article
             except:
                 raise
@@ -232,9 +232,9 @@ class Reader(object):
             A list containing any matched filenames.
         """
         return [
-            file
-            for file in os.listdir(self.articles_folder)
-            if re.match(self._build_filter_pattern(year, month, day), file)
+            f
+            for f in os.listdir(self.articles_folder)
+            if re.match(self._build_filter_pattern(year, month, day), f)
         ]
 
 
@@ -287,7 +287,6 @@ class Article(object):
         >>> ['foo', 'bar']
     """
 
-    """ This is a list containing reserved metadata keywords. """
     IGNORED_META_TAGS = ['date', 'summary']
 
     def __init__(self, filename, **kwargs):
@@ -563,9 +562,9 @@ class ArticleCollection(object):
             IndexError if attempting to move past the end of the collection.
         """
         try:
-            next = self.articles[self._current_index + 1]
+            n = self.articles[self._current_index + 1]
             self._current_index += 1
-            return next
+            return n
         except IndexError:
             raise
 
@@ -658,7 +657,7 @@ class ArticleCollection(object):
         """
         if not isinstance(articles, list):
             articles = [articles]
-        for index, article in enumerate(articles):
+        for article in articles:
             if not isinstance(article, Article):
                 return False
         return True

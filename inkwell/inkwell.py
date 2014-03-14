@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Blueprint, Flask, render_template, current_app
 from api import archive, article
-from . import reader, utils, exceptions
+from . import utils, exceptions
 
 rules = [
       ('/', archive.Archive, 'api_archive')
@@ -18,7 +18,7 @@ for rule in rules:
         methods=['GET'])
 
 @api.before_request
-def before_request(*args, **kwargs):
+def before_request():
     """ Decorator applied to all incoming requests determines whether the
     request contains a valid `Accept` header with the value of
     `application/json`. Raises `BadRequest` if evaluated to False.

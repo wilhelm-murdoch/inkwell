@@ -13,14 +13,14 @@ class JSONHTTPException(exceptions.HTTPException):
     """ Implements `exceptions.HTTPException` and adds support for JSON output
     as a Flask request.
     """
-    def get_body(self):
+    def get_body(self, environ):
         return json.dumps({
             'code': self.code,
             'name': self.name,
             'description': self.description
         })
 
-    def get_headers(self):
+    def get_headers(self, environ):
         return [('Content-Type', 'application/json')]
 
 

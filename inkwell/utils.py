@@ -11,7 +11,7 @@ def json_presenter(f):
     def decorator(*args, **kwargs):
         try:
             result = f(*args, **kwargs)
-        except Exception as e:
+        except:
             raise
 
         response = make_response(json.dumps(result, cls=Encoder))
