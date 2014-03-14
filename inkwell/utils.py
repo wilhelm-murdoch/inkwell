@@ -72,6 +72,7 @@ class ApiEndpoint(MethodView):
     """
 
     decorators = [json_presenter]
+    reader = None
 
     def __init__(self):
         self.reader = Reader(current_app.config.get('ARTICLES_FOLDER'))
