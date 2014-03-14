@@ -65,8 +65,7 @@ class Reader(object):
             raise IOError("article path {} is invalid".format(path))
         self._articles_folder = path
 
-    def list(self, by_year=None, by_month=None, by_day=None, limit=None,
-        offset=None):
+    def list(self, **kwargs):
         """ Responsible for searching the specified articles folder for files
         that match ARTICLE_FILE_SEARCH_PATTERN. Returns an instance of
         `inkwell.reader.ArticleCollection` if any articles are found.
@@ -83,6 +82,12 @@ class Reader(object):
         Returns::
             instance of `inkwell.reader.ArticleCollection`
         """
+        by_year  = kwargs.get('by_year', None)
+        by_month = kwargs.get('by_month', None)
+        by_day   = kwargs.get('by_day', None)
+        limit    = kwargs.get('limit', None)
+        offset   = kwargs.get('offset', None)
+
         articles = ArticleCollection()
 
         # Get the entire list of article filenames and sort them chronologically
