@@ -62,7 +62,7 @@ class Reader(object):
         """
         path = os.path.join(os.getcwd(), path)
         if not os.path.exists(path):
-            raise IOError, "article path {} is invalid".format(path)
+            raise IOError("article path {} is invalid".format(path))
         self._articles_folder = path
 
     def list(self, by_year=None, by_month=None, by_day=None, limit=None,
@@ -130,7 +130,7 @@ class Reader(object):
             title = kwargs.get('title', None)
 
             if not year and not month and not day and not title:
-                raise ValueError, 'Year, month, day and title not specified.'
+                raise ValueError('Year, month, day and title not specified.')
 
             filename = "{}.{}".format('-'.join([
                   str(year)
@@ -174,7 +174,7 @@ class Reader(object):
         try:
             header, body = content.split('\n\n', 1)
         except:
-            raise ValueError, "{} may be malformed.".format(filename)
+            raise ValueError("{} may be malformed.".format(filename))
 
         try:
             meta = yaml.load(header)
@@ -183,7 +183,7 @@ class Reader(object):
                 body = meta
                 meta = {}
         except:
-            raise ValueError, "{} has an invalid header.".format(filename)
+            raise ValueError("{} has an invalid header.".format(filename))
 
         return Article(filename=filename, meta=meta, body=body)
 
@@ -206,7 +206,7 @@ class Reader(object):
             month = "%02d" % (int(month),) if month else None
             day   = "%02d" % (int(day),) if day else None
         except:
-            raise ValueError, 'year, month and day must be of type int'
+            raise ValueError('year, month and day must be of type int')
 
         return ARTICLE_FILE_SEARCH_PATTERN % (
               year  or '\d{4}'
@@ -299,7 +299,7 @@ class Article(object):
         """
         self.matched = re.search(ARTICLE_FILE_PATTERN, filename)
         if not self.matched:
-            raise ValueError, 'filename must match ARTICLE_FILE_PATTERN.'
+            raise ValueError('filename must match ARTICLE_FILE_PATTERN.')
 
         self.filename = filename
         self.meta = kwargs.get('meta', {})

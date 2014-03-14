@@ -17,6 +17,6 @@ class Archive(utils.ApiEndpoint):
         except ValueError:
             raise exceptions.NotFound
         except Exception as e:
-            raise exceptions.InternalServerError, e.message
+            raise exceptions.InternalServerError(e.message)
 
         return articles
