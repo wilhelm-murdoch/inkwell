@@ -51,8 +51,6 @@ class Encoder(json.JSONEncoder):
             return obj.isoformat() + 'Z'
         elif hasattr(obj, 'isoformat'):
             return obj.isoformat()
-        elif isinstance(obj, ObjectId):
-            return obj.__str__()
         return json.JSONEncoder.default(self, obj)
 
 
@@ -76,8 +74,6 @@ class ApiEndpoint(MethodView):
     decorators = [json_presenter]
 
     def __init__(self):
-        super(ApiEndpoint, self).__init__()
-
         self.reader = Reader(current_app.config.get('ARTICLES_FOLDER'))
 
     @property
