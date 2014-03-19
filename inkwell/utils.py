@@ -4,6 +4,10 @@ from flask.views import MethodView
 from reader import Reader, Article, ArticleCollection
 from datetime import date, datetime
 
+REGEX_YEAR  = '^(19|20)\d{2}$'
+REGEX_MONTH = '^(0?[1-9]|1[012])$'
+REGEX_DAY   = '^(0?[1-9]|[12]\d|3[01])$'
+
 def json_presenter(f):
     """ A method view decorator used to transform view response bodies into
     JSON-based Flask response objects with appropriate headers.

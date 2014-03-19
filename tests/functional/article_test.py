@@ -28,7 +28,11 @@ class ArticleTest(unittest.TestCase):
         self.assertTrue('title' in body)
 
     def test_article_not_found(self):
-        response = fixtures.client.get('/inkwell/9999/99/99/not-found', \
+        response = fixtures.client.get('/inkwell/2011/01/01/not-found', 
             headers={'Accept': 'application/json'})
 
         self.assertEquals(response.status_code, 404)
+
+    def test_article_year_badrequest(self):
+        response = fixtures.client.get('/inkwell/9999/01/01/not-found', 
+            headers={'Accept': 'application/json'})

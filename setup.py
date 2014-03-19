@@ -17,9 +17,10 @@ setup(
         , 'PyYaml==3.10'
         , 'python-dateutil==2.1'
         , 'Markdown==2.3.1'
+        , 'validator>=2.0.0'
     ],
     setup_requires=[
-          'nose==1.3.0'
-        , 'yanc==0.2.3'
+          'nose==1.3.1'
+        , 'yanc==0.2.4'
     ]
 )
