@@ -7,13 +7,16 @@ class Archive(utils.ApiEndpoint):
         check = collection.Collection()
 
         if year:
-            check.append(field.Field('year', year).append(rules.Regex(utils.REGEX_YEAR, error='{} is not a valid year')))
+            check.append(field.Field('year', year).append(
+                rules.Regex(utils.REGEX_YEAR, error='{} is not a valid year')))
 
         if month: 
-            check.append(field.Field('month', month).append(rules.Regex(utils.REGEX_MONTH, error='{} is not a valid month')))
+            check.append(field.Field('month', month).append(
+                rules.Regex(utils.REGEX_MONTH, error='{} is not a valid month')))
 
         if day:
-            check.append(field.Field('day', day).append(rules.Regex(utils.REGEX_DAY, error='{} is not a valid day')))
+            check.append(field.Field('day', day).append(
+                rules.Regex(utils.REGEX_DAY, error='{} is not a valid day')))
 
         if not check.run():
             raise exceptions.BadRequest(check.errors())

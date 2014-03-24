@@ -4,6 +4,7 @@ import unittest
 import json
 import random
 import re
+from flask import json
 from tests import fixtures
 from werkzeug.test import Client
 
@@ -36,3 +37,19 @@ class ArticleTest(unittest.TestCase):
     def test_article_year_badrequest(self):
         response = fixtures.client.get('/inkwell/9999/01/01/not-found', 
             headers={'Accept': 'application/json'})
+
+    def test_invalid_year_month_and_day(self):
+        response = fixtures.client.get('/inkwell/9999/99/99/not-found', 
+            headers={'Accept': 'application/json'})
+
+        body = json.loads(response.data)
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(len(body['description']['year']), 1)
+        self.assertEquals(body['description']['year'][0], '9999 is not a valid year')
+
+        self.assertEquals(len(body['description']['month']), 1)
+        self.assertEquals(body['description']['month'][0], '99 is not a valid month')
+
+        self.assertEquals(len(body['description']['day']), 1)
+        self.assertEquals(body['description']['day'][0], '99 is not a valid day')
